@@ -1,0 +1,40 @@
+﻿<Window x:Class="MedianStats.NotifyHelper"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MedianStats"
+        mc:Ignorable="d"
+        Title="NotifyHelper" Height="429.508" Width="544.262">
+	<Grid>
+		<StackPanel>
+			<Label>
+				<TextBlock>
+				"Item Name" flag1 flag2 ... flagN # Everything after hashtag is a comment.<LineBreak/>
+<LineBreak/>
+Item name is what youre matching against. Its a regex string.<LineBreak/>
+If youre unsure what regex is, use letters only.<LineBreak/>
+<LineBreak/>
+Flags:<LineBreak/>
+> 0-4 sacred - Item must be one of these tiers.<LineBreak/>
+   Tier 0 means untiered items (runes, amulets, etc).<LineBreak/>
+> normal superior rare set unique - Item must be one of these qualities.<LineBreak/>
+> eth - Item must be ethereal.<LineBreak/>
+> white red lime blue gold orange yellow green purple - notification color.<LineBreak/>
+StringFormat(> sound[1-%s] - notification sound., g_iNumSounds)<LineBreak/>
+> hide - Hides matching items on ground, without notification. Requires DropFilter.dll<LineBreak/>
+<LineBreak/>
+Example:<LineBreak/>
+\"Battle\" sacred unique eth sound3<LineBreak/>
+This would notify for ethereal SU Battle Axe, Battle Staff,<LineBreak/>
+Short Battle Bow and Long Battle Bow, and would play Sound 3<LineBreak/>
+<LineBreak/>
+Write something in this box and click OK to see what matches!
+				</TextBlock>
+			</Label>
+			<TextBox x:Name="testString"></TextBox>
+			<Button Click="Button_Click">asfd</Button>
+			<ListBox x:Name="matchesList"></ListBox>
+		</StackPanel>
+	</Grid>
+</Window>
