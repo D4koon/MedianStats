@@ -46,5 +46,17 @@ namespace MedianStats.Properties {
                 this["mousefix"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public double notifierVolume {
+            get {
+                return ((double)(this["notifierVolume"]));
+            }
+            set {
+                this["notifierVolume"] = value;
+            }
+        }
     }
 }

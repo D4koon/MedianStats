@@ -6,52 +6,63 @@
 		xmlns:local="clr-namespace:MedianStats"
 		mc:Ignorable="d"
 		Title="MedianStats" Height="450" Width="800" Closing="Window_Closing">
-	<TabControl>
-		<TabItem Header="Notifier">
-			<Grid>
-				<StackPanel>
-					<TextBox Height="300" x:Name="notifierText" AcceptsReturn="True" FontFamily="Courier New"></TextBox>
-					<Button Click="Button_Click">Notify Helper</Button>
-				</StackPanel>
-			</Grid>
-		</TabItem>
-		<TabItem Header="Stats">
-			<Grid>
-				<StackPanel>
-					<CheckBox x:Name="readMercenary">Read Mercenary</CheckBox>
-					<Button Click="Button_Click_Read">Read stats</Button>
-					<Grid Height="300">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="*"/>
-							<ColumnDefinition Width="*"/>
-							<ColumnDefinition Width="*"/>
-						</Grid.ColumnDefinitions>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="18"/>
+		</Grid.RowDefinitions>
+		<TabControl Grid.Row="0">
+			<TabItem Header="Notifier">
+				<Grid>
+					<StackPanel>
+						<TextBox Height="300" x:Name="notifierText" AcceptsReturn="True" FontFamily="Courier New"></TextBox>
+						<Button Click="Button_Click">Notify Helper</Button>
+						<StackPanel Orientation="Horizontal">
+							<Label>Volume</Label>
+							<Slider x:Name="notifierVolume" Width="200" ValueChanged="NotifierVolume_ValueChanged"/>
+						</StackPanel>
+					</StackPanel>
+				</Grid>
+			</TabItem>
+			<TabItem Header="Stats">
+				<Grid>
+					<StackPanel>
+						<CheckBox x:Name="readMercenary">Read Mercenary</CheckBox>
+						<Button Click="Button_Click_Read">Read stats</Button>
+						<Grid Height="300">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
 
-						<DockPanel Grid.Column="0">
-							<Label DockPanel.Dock="Top">statsListBasic</Label>
-							<ListView x:Name="statsListBasic"/>
-						</DockPanel>
-						<DockPanel Grid.Column="1">
-							<Label DockPanel.Dock="Top">statsListDefens</Label>
-							<ListView x:Name="statsListDefens"/>
-						</DockPanel>
-						<DockPanel Grid.Column="2">
-							<Label DockPanel.Dock="Top">statsListOffens</Label>
-							<ListView x:Name="statsListOffens"/>
-						</DockPanel>
-					</Grid>
-				</StackPanel>
-			</Grid>
-		</TabItem>
-		<TabItem Header="Options">
-			<Grid>
-				<StackPanel>
-					<CheckBox x:Name="toggle" Checked="Toggle_Changed" Unchecked="Toggle_Changed">Switch Show Items between hold/toggle mode</CheckBox>
-					<CheckBox x:Name="mousefix" Checked="Mousefix_Changed" Unchecked="Mousefix_Changed">Continue attacking when monster dies under cursor</CheckBox>
-					<CheckBox x:Name="nopickup" Checked="Nopickup_Changed" Unchecked="Nopickup_Changed">Always activate /nopickup</CheckBox>
-				</StackPanel>
-			</Grid>
-		</TabItem>
+							<DockPanel Grid.Column="0">
+								<Label DockPanel.Dock="Top">statsListBasic</Label>
+								<ListView x:Name="statsListBasic"/>
+							</DockPanel>
+							<DockPanel Grid.Column="1">
+								<Label DockPanel.Dock="Top">statsListDefens</Label>
+								<ListView x:Name="statsListDefens"/>
+							</DockPanel>
+							<DockPanel Grid.Column="2">
+								<Label DockPanel.Dock="Top">statsListOffens</Label>
+								<ListView x:Name="statsListOffens"/>
+							</DockPanel>
+						</Grid>
+					</StackPanel>
+				</Grid>
+			</TabItem>
+			<TabItem Header="Options">
+				<Grid>
+					<StackPanel>
+						<CheckBox x:Name="toggle" Checked="Toggle_Changed" Unchecked="Toggle_Changed">Switch Show Items between hold/toggle mode</CheckBox>
+						<CheckBox x:Name="mousefix" Checked="Mousefix_Changed" Unchecked="Mousefix_Changed">Continue attacking when monster dies under cursor</CheckBox>
+						<CheckBox x:Name="nopickup" Checked="Nopickup_Changed" Unchecked="Nopickup_Changed">Always activate /nopickup</CheckBox>
+					</StackPanel>
+				</Grid>
+			</TabItem>
 		
-	</TabControl>
+		</TabControl>
+		<Label x:Name="errorMsg" Grid.Row="1" Padding="0" Foreground="Red">ErrorMsg</Label>
+	</Grid>
 </Window>

@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using static MedianStats.MainWindow;
 using static MedianStats.NomadMemory;
 
@@ -178,10 +179,14 @@ namespace MedianStats
 
 		public static void NotifierPlaySound(int iSound)
 		{
-			var iVolume = mainInstance._GUI_Volume(iSound) * 10;
-			if (iVolume > 0) {
-				SoundPlayer sound = new SoundPlayer("./resources/sound1.wav");
-				sound.Play();
+			var volume = (double)mainInstance._GUI_Volume(iSound);
+			if (volume > 0) {
+				var mediaPlayer = new MediaPlayer();
+				mediaPlayer.Open(new Uri(ExeDir + "/resources/sound1.wav"));
+				mediaPlayer.Volume = volume / 10.0;
+				mediaPlayer.Play();
+				//SoundPlayer sound = new SoundPlayer("./resources/sound1.wav");
+				//sound.Play();
 			}
 		}
 

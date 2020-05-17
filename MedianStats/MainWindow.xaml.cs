@@ -29,17 +29,22 @@ namespace MedianStats
 	public partial class MainWindow : Window
 	{
 		public static MainWindow mainInstance;
+		public static string ExeDir;
 
 		public MainWindow()
 		{
 			InitializeComponent();
 
 			mainInstance = this;
+			ExeDir = System.Reflection.Assembly.GetExecutingAssembly().Location.Substring(0, System.Reflection.Assembly.GetExecutingAssembly().Location.LastIndexOf('\\'));
 
 			notifierText.Text = Settings.Default.notifierText.Length > 0 ? Properties.Settings.Default.notifierText : notifierTextDefault;
 			_GUI_Option("notify-text", notifierText.Text);
 
 			mousefix.IsChecked = Settings.Default.mousefix;
+
+			notifierVolume.Value = Settings.Default.notifierVolume;
+
 
 			notifierText.TextChanged += (unused1, unused2) =>
 			{
@@ -124,8 +129,14 @@ namespace MedianStats
 			bool bIsIngame = false;
 			
 			while (true) {
-
-				UpdateHandle();
+				
+				try {
+					UpdateHandle();
+					ErrorMsg = "";
+				} catch (Exception ex) {
+					ErrorMsg = ex.Message;
+				}
+				
 
 				if (IsIngame()) {
 					if (!bIsIngame) {
@@ -173,6 +184,15 @@ namespace MedianStats
 			set {
 				if (!CheckAccess()) {
 					Dispatcher.Invoke(() => notifierText.Background = value);
+				}
+			}
+		}
+
+		string ErrorMsg
+		{
+			set {
+				if (!CheckAccess()) {
+					Dispatcher.Invoke(() => errorMsg.Content = value);
 				}
 			}
 		}
@@ -265,10 +285,16 @@ namespace MedianStats
 
 		public void UpdateHandle() {
 			var hWnd = AutoItApi.WinGetHandle("Diablo II");
+			if (hWnd == (IntPtr)0) {
+				throw new Exception("UpdateHandle: Couldn't find Diablo II window");
+			}
 			var iPID = AutoItApi.WinGetProcess(hWnd);
 
 			//if (iPID == -1) { return _CloseHandle(); }
-			if (iPID == g_iD2pid) { return; }
+			if (iPID == g_iD2pid) {
+				// Already initialized
+				return;
+			}
 
 			_CloseHandle();
 			g_iUpdateFailCounter += 1;
@@ -635,23 +661,32 @@ namespace MedianStats
 			var iOption = _GUI_OptionID(sOption);
 			var vOld = g_avGUIOptionList[iOption][1];
 
-			if (vValue != null && /*or*/vValue != vOld) {
+			if (vValue != null && vValue != vOld) {
 				g_avGUIOptionList[iOption][1] = vValue;
-				//SaveGUISettings();
 			}
 
 			return vOld;
 		}
 
-		public int _GUI_Volume(int iIndex, int iValue = 5)
+		public int _GUI_Volume(int iIndex, int iValue = 3)
 		{
 			//var id = g_idVolumeSlider + iIndex * 3;
 
 			//if (!/*not*/ iValue == default) { GUICtrlSetData(id, iValue);
 
 			//return GUICtrlRead(id);
-			return 5;
+			return 3;
 		}
+
+		private void NotifierVolume_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+		{
+			var volume = ((Slider)sender).Value;
+			//Debug.WriteLine(volume);
+
+			Settings.Default.notifierVolume = volume;
+			Settings.Default.Save();
+		}
+
 		//#EndRegion
 
 		//#Region GUI
