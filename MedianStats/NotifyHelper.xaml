@@ -1,11 +1,11 @@
-﻿<Window x:Class="MedianStats.NotifyHelper"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MedianStats"
-        mc:Ignorable="d"
-        Title="NotifyHelper" Height="429.508" Width="544.262">
+﻿<UserControl x:Class="MedianStats.NotifyHelper"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:local="clr-namespace:MedianStats"
+		mc:Ignorable="d"
+		Height="429.508" Width="544.262">
 	<Grid>
 		<StackPanel>
 			<Label>
@@ -29,12 +29,12 @@ Example:<LineBreak/>
 This would notify for ethereal SU Battle Axe, Battle Staff,<LineBreak/>
 Short Battle Bow and Long Battle Bow, and would play Sound 3<LineBreak/>
 <LineBreak/>
-Write something in this box and click OK to see what matches!
+Write something in this box and click "Show Matches" to see what matches!
 				</TextBlock>
 			</Label>
 			<TextBox x:Name="testString"></TextBox>
-			<Button Click="Button_Click">asfd</Button>
+			<Button Click="Button_Click">Show Matches</Button>
 			<ListBox x:Name="matchesList"></ListBox>
 		</StackPanel>
 	</Grid>
-</Window>
+</UserControl>

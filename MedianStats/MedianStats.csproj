@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="IO\Sound.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="WinApi.cs" />
     <Compile Include="MedianData.cs" />

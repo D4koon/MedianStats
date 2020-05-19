@@ -17,7 +17,7 @@ namespace MedianStats
 	/// <summary>
 	/// Interaction logic for NotifyHelper.xaml
 	/// </summary>
-	public partial class NotifyHelper : Window
+	public partial class NotifyHelper : UserControl
 	{
 		public NotifyHelper()
 		{

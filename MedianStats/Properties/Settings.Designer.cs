@@ -49,13 +49,15 @@ namespace MedianStats.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5")]
-        public double notifierVolume {
+        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<Sound xmlns:xsi=\"http://www.w3.org/2001" +
+            "/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n  <FilePath>" +
+            "resources/sound1.wav</FilePath>\r\n  <Volume>0.15</Volume>\r\n</Sound>")]
+        public global::MedianStats.IO.SoundList notifierSounds {
             get {
-                return ((double)(this["notifierVolume"]));
+                return ((global::MedianStats.IO.SoundList)(this["notifierSounds"]));
             }
             set {
-                this["notifierVolume"] = value;
+                this["notifierSounds"] = value;
             }
         }
     }

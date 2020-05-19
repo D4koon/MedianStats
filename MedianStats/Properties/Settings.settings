@@ -8,8 +8,12 @@
     <Setting Name="mousefix" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="notifierVolume" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">5</Value>
+    <Setting Name="notifierSounds" Type="MedianStats.IO.SoundList" Scope="User">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;Sound xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;FilePath&gt;resources/sound1.wav&lt;/FilePath&gt;
+  &lt;Volume&gt;0.15&lt;/Volume&gt;
+&lt;/Sound&gt;</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -43,7 +43,8 @@ namespace MedianStats
 
 			mousefix.IsChecked = Settings.Default.mousefix;
 
-			notifierVolume.Value = Settings.Default.notifierVolume;
+			InitVolumeSliders();
+
 
 
 			notifierText.TextChanged += (unused1, unused2) =>
@@ -55,6 +56,38 @@ namespace MedianStats
 
 			Task.Run(() => Main());
 		}
+
+		private void InitVolumeSliders()
+		{
+			// Remove dummy.
+			volumneSliders.Children.Clear();
+
+			// Add a slider for each sound
+			for (int i = 0; i < Settings.Default.notifierSounds.Sounds.Count; i++) {
+				notifier.sounds.Add(i, Settings.Default.notifierSounds[i]);
+
+				var stackPanel = new StackPanel() { Orientation = Orientation.Horizontal };
+				stackPanel.Children.Add(new Label() { Content = "Volume" + (i + 1) });
+				var slider = new Slider() { Width = 200, Maximum = 1 };
+				slider.Value = Settings.Default.notifierSounds[i].Volume;
+				slider.Tag = i;
+				slider.ValueChanged += (sender, e) => {
+					// Slider has value from 0...1
+					var volume = ((Slider)sender).Value;
+					Debug.WriteLine(volume);
+
+					int id = (int)((Slider)sender).Tag;
+					notifier.sounds[id].Volume = volume;
+					Settings.Default.notifierSounds[id].Volume = volume;
+					Settings.Default.Save();
+
+				};
+				stackPanel.Children.Add(slider);
+				volumneSliders.Children.Add(stackPanel);
+			}
+		}
+
+
 
 		const int UBOUND_COLUMNS = 2;
 		
@@ -89,7 +122,6 @@ namespace MedianStats
 
 		public bool g_bnotifierChanged = false;
 
-		string[] g_asDLL = { "D2Client.dll", "D2Common.dll", "D2Win.dll", "D2Lang.dll" };
 		public IntPtr g_hD2Client, g_hD2Common, g_hD2Win, g_hD2Lang;
 		public IntPtr g_ahD2Handle;
 
@@ -195,12 +227,6 @@ namespace MedianStats
 					Dispatcher.Invoke(() => errorMsg.Content = value);
 				}
 			}
-		}
-
-		private void Button_Click(object sender, RoutedEventArgs e)
-		{
-			NotifyHelper notifyHelper = new NotifyHelper();
-			notifyHelper.Show();
 		}
 
 		private void Button_Click_Read(object sender, RoutedEventArgs e)
@@ -328,7 +354,9 @@ namespace MedianStats
 			var pAllocAddress = VirtualAllocEx(g_ahD2Handle, IntPtr.Zero, 0x100, AllocationType.Commit | AllocationType.Reserve, MemoryProtection.ExecuteReadWrite);
 			if (pAllocAddress == IntPtr.Zero) { throw new Exception("UpdateDllHandles: Failed to allocate memory."); }
 
-			var iDLLs = /*UBound*/(g_asDLL).Length;
+			string[] g_asDLL = { "D2Client.dll", "D2Common.dll", "D2Win.dll", "D2Lang.dll" };
+
+			var iDLLs = g_asDLL.Length;
 			IntPtr[] hDLLHandle = new IntPtr[iDLLs];
 			var bFailed = false;
 
@@ -666,25 +694,6 @@ namespace MedianStats
 			}
 
 			return vOld;
-		}
-
-		public int _GUI_Volume(int iIndex, int iValue = 3)
-		{
-			//var id = g_idVolumeSlider + iIndex * 3;
-
-			//if (!/*not*/ iValue == default) { GUICtrlSetData(id, iValue);
-
-			//return GUICtrlRead(id);
-			return 3;
-		}
-
-		private void NotifierVolume_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-		{
-			var volume = ((Slider)sender).Value;
-			//Debug.WriteLine(volume);
-
-			Settings.Default.notifierVolume = volume;
-			Settings.Default.Save();
 		}
 
 		//#EndRegion

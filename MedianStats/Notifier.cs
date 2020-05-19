@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MedianStats.IO;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -42,14 +43,16 @@ namespace MedianStats
 				{ "eth", "socket", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" },
 				{ "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" },
 				{ "clr_none", "white", "red", "lime", "blue", "gold", "grey", "black", "clr_unk", "orange", "yellow", "green", "purple", "show", "hide", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-				{ "sound_none", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" },
+				{ "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" },
 				{ "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" }
 			};
 
-			for (int i = 1; i <= g_iNumSounds; i++) {
-				g_asnotifyFlags[(int)enotifyFlags.Sound, i] = "sound" + i;
+			for (int i = 0; i <= g_iNumSounds; i++) {
+				g_asnotifyFlags[(int)enotifyFlags.Sound, i] = "sound" + (i + 1);
 			}
 		}
+
+		public Dictionary<int, Sound> sounds = new Dictionary<int, Sound>();
 
 		public void NotifierMain()
 		{
@@ -68,7 +71,7 @@ namespace MedianStats
 
 			var bnotifySuperior = (bool)mainInstance._GUI_Option("notify-superior");
 
-			Debug.WriteLine("========= start =========");
+			//Debug.WriteLine("========= start =========");
 
 			for (int i = 0; i <= (uint)iPaths - 1; i++) {
 
@@ -149,8 +152,8 @@ namespace MedianStats
 
 							mainInstance.PrintString("- " + sText, (ePrint)iColor);
 
-							if (iFlagsSound != NotifierFlag("sound_none")) {
-								NotifierPlaySound(iFlagsSound);
+							if (sounds.ContainsKey(iFlagsSound)) {
+								sounds[iFlagsSound].Play();
 							}
 						}
 					}
@@ -164,7 +167,7 @@ namespace MedianStats
 		{
 			for (int i = 0; i <= (int)enotifyFlags.Last - 1; i++) {
 
-				for (int j = 0; j <= /*UBound(g_asNotifyFlags, UBOUND_COLUMNS)*/ g_asnotifyFlags.GetLength(1) - 1; j++) {
+				for (int j = 0; j <= g_asnotifyFlags.GetLength(1) - 1; j++) {
 
 					if (g_asnotifyFlags[i, j] == "") {
 						break;
@@ -175,19 +178,6 @@ namespace MedianStats
 			}
 
 			throw new Exception("Error with NotifierFlag");
-		}
-
-		public static void NotifierPlaySound(int iSound)
-		{
-			var volume = (double)mainInstance._GUI_Volume(iSound);
-			if (volume > 0) {
-				var mediaPlayer = new MediaPlayer();
-				mediaPlayer.Open(new Uri(ExeDir + "/resources/sound1.wav"));
-				mediaPlayer.Volume = volume / 10.0;
-				mediaPlayer.Play();
-				//SoundPlayer sound = new SoundPlayer("./resources/sound1.wav");
-				//sound.Play();
-			}
 		}
 
 		/// <summary>
@@ -333,7 +323,7 @@ namespace MedianStats
 				{ enotifyFlags.Misc, 0 },
 				{ enotifyFlags.NoMask, 0 },
 				{ enotifyFlags.Colour, 0 },
-				{ enotifyFlags.Sound, 0 }
+				{ enotifyFlags.Sound, -1 }
 			};
 
 			public string Match = "";

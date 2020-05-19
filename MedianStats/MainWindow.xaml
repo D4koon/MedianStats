@@ -5,7 +5,7 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:MedianStats"
 		mc:Ignorable="d"
-		Title="MedianStats" Height="450" Width="800" Closing="Window_Closing">
+		Title="MedianStats" Height="500" Width="800" Closing="Window_Closing">
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*"/>
@@ -13,16 +13,28 @@
 		</Grid.RowDefinitions>
 		<TabControl Grid.Row="0">
 			<TabItem Header="Notifier">
-				<Grid>
-					<StackPanel>
-						<TextBox Height="300" x:Name="notifierText" AcceptsReturn="True" FontFamily="Courier New"></TextBox>
-						<Button Click="Button_Click">Notify Helper</Button>
-						<StackPanel Orientation="Horizontal">
-							<Label>Volume</Label>
-							<Slider x:Name="notifierVolume" Width="200" ValueChanged="NotifierVolume_ValueChanged"/>
+				<TabControl TabStripPlacement="Bottom">
+					<TabItem Header="Triggers">
+						<ScrollViewer>
+							<TextBox VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="notifierText" AcceptsReturn="True" FontFamily="Courier New"></TextBox>
+						</ScrollViewer>
+					</TabItem>
+					<TabItem Header="Sounds">
+						<StackPanel>
+							<StackPanel x:Name="volumneSliders">
+								<StackPanel Orientation="Horizontal">
+									<Label>Volume-Dummy</Label>
+									<Slider Width="200" Maximum="1"/>
+								</StackPanel>
+							</StackPanel>
 						</StackPanel>
-					</StackPanel>
-				</Grid>
+					</TabItem>
+					<TabItem Header="Helper">
+						<Grid>
+							<local:NotifyHelper></local:NotifyHelper>
+						</Grid>
+					</TabItem>
+				</TabControl>
 			</TabItem>
 			<TabItem Header="Stats">
 				<Grid>
