@@ -64,26 +64,12 @@ namespace MedianStats
 
 			// Add a slider for each sound
 			for (int i = 0; i < Settings.Default.notifierSounds.Sounds.Count; i++) {
+				var soundIt = Settings.Default.notifierSounds[i];
+
+				var soundconfig = new SoundConfig() { Sound = soundIt, ID = i };
+				volumneSliders.Children.Add(soundconfig);
+
 				notifier.sounds.Add(i, Settings.Default.notifierSounds[i]);
-
-				var stackPanel = new StackPanel() { Orientation = Orientation.Horizontal };
-				stackPanel.Children.Add(new Label() { Content = "Volume" + (i + 1) });
-				var slider = new Slider() { Width = 200, Maximum = 1 };
-				slider.Value = Settings.Default.notifierSounds[i].Volume;
-				slider.Tag = i;
-				slider.ValueChanged += (sender, e) => {
-					// Slider has value from 0...1
-					var volume = ((Slider)sender).Value;
-					Debug.WriteLine(volume);
-
-					int id = (int)((Slider)sender).Tag;
-					notifier.sounds[id].Volume = volume;
-					Settings.Default.notifierSounds[id].Volume = volume;
-					Settings.Default.Save();
-
-				};
-				stackPanel.Children.Add(slider);
-				volumneSliders.Children.Add(stackPanel);
 			}
 		}
 
@@ -1149,7 +1135,7 @@ namespace MedianStats
 
 		public bool WriteWString(string sString)
 		{
-			if (!/*not*/ IsIngame()) {
+			if (!IsIngame()) {
 				throw new Exception("WriteWString: not ingame.");
 			}
 

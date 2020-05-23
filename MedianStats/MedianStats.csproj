@@ -56,6 +56,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="IO\Sound.cs" />
+    <Compile Include="mvvm\CommandHandler.cs" />
+    <Compile Include="SoundConfig.xaml.cs">
+      <DependentUpon>SoundConfig.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Util.cs" />
     <Compile Include="WinApi.cs" />
     <Compile Include="MedianData.cs" />
@@ -81,6 +85,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="NotifyHelper.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SoundConfig.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
