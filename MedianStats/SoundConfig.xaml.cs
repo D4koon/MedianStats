@@ -1,5 +1,6 @@
 ﻿using MedianStats.IO;
 using MedianStats.Properties;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -53,7 +54,18 @@ namespace MedianStats
 		public ICommand ChooseCommand
 		{
 			get {
-				return _chooseCommand ?? (_chooseCommand = new CommandHandler(() => sound.Play(), () => true));
+				return _chooseCommand ?? (_chooseCommand = new CommandHandler(() => ShowDialog(), () => true));
+			}
+		}
+
+		private void ShowDialog()
+		{
+			OpenFileDialog openFileDialog = new OpenFileDialog();
+			openFileDialog.InitialDirectory = MainWindow.ExeDir + "\\resources";
+			if (openFileDialog.ShowDialog() == true) {
+				sound.FilePath = openFileDialog.FileName;
+				Settings.Default.notifierSounds[ID].FilePath = openFileDialog.FileName;
+				Settings.Default.Save();
 			}
 		}
 

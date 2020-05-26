@@ -11,6 +11,6 @@
 		<!-- IsMoveToPointEnabled, so that on click on the slider it does not jump to full on or off -->
 		<Slider x:Name="slider" ValueChanged="Slider_ValueChanged" IsMoveToPointEnabled="True" VerticalAlignment="Center" Width="200" Maximum="1"/>
 		<Button Command="{Binding PlayCommand}" Margin="10, 0, 0, 0">Play</Button>
-		<Button Margin="10, 0, 0, 0">Choose...</Button>
+		<Button Command="{Binding ChooseCommand}" Margin="10, 0, 0, 0">Choose...</Button>
 	</StackPanel>
 </UserControl>
