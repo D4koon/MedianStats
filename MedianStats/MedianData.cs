@@ -22,7 +22,14 @@ namespace MedianStats
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 52)]
 		public /*dword*/uint[] pad2/*[52]*/;
 		[MarshalAs(UnmanagedType.U4)]
-		public /*dword*/uint pUnit;
+		public /*dword*/uint pUnitNext;
+
+		const uint unitTypeItem = 4;
+
+		public bool IsItem { get { return iUnitType == unitTypeItem; } }
+		public string FullText { get { return Notifier.ItemCache[(int)iClass].FullText; } }
+		public int TierFlag { get { return Notifier.ItemCache[(int)iClass].Tier; } }
+		public string Name { get { return Notifier.ItemCache[(int)iClass].Name; } }
 	}
 
 	[StructLayout(LayoutKind.Sequential, Pack = 1)]

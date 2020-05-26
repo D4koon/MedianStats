@@ -1517,9 +1517,9 @@ func LoadGUIVolume()
 endfunc
 
 func DummySelectAll()
-    local $hWnd = _WinAPI_GetFocus()
-    local $sClass = _WinAPI_GetClassName($hWnd)
-    if ($sClass == "Edit") then _GUICtrlEdit_SetSel($hWnd, 0, -1)
+	local $hWnd = _WinAPI_GetFocus()
+	local $sClass = _WinAPI_GetClassName($hWnd)
+	if ($sClass == "Edit") then _GUICtrlEdit_SetSel($hWnd, 0, -1)
 endfunc
 
 Func WM_COMMAND($hWnd, $iMsg, $wParam, $lParam)
@@ -1535,32 +1535,32 @@ Func WM_COMMAND($hWnd, $iMsg, $wParam, $lParam)
 EndFunc   ;==>WM_COMMAND
 
 Func _GetDPI()
-    Local $avRet[3]
-    Local $iDPI, $iDPIRat, $hWnd = 0
-    Local $hDC = DllCall("user32.dll", "long", "GetDC", "long", $hWnd)
-    Local $aResult = DllCall("gdi32.dll", "long", "GetDeviceCaps", "long", $hDC[0], "long", 90)
-    DllCall("user32.dll", "long", "ReleaseDC", "long", $hWnd, "long", $hDC)
-    $iDPI = $aResult[0]
+	Local $avRet[3]
+	Local $iDPI, $iDPIRat, $hWnd = 0
+	Local $hDC = DllCall("user32.dll", "long", "GetDC", "long", $hWnd)
+	Local $aResult = DllCall("gdi32.dll", "long", "GetDeviceCaps", "long", $hDC[0], "long", 90)
+	DllCall("user32.dll", "long", "ReleaseDC", "long", $hWnd, "long", $hDC)
+	$iDPI = $aResult[0]
 
-    Select
-        Case $iDPI = 0
-            $iDPI = 96
-            $iDPIRat = 94
-        Case $iDPI < 84
-            $iDPIRat = $iDPI / 105
-        Case $iDPI < 121
-            $iDPIRat = $iDPI / 96
-        Case $iDPI < 145
-            $iDPIRat = $iDPI / 95
-        Case Else
-            $iDPIRat = $iDPI / 94
-    EndSelect
+	Select
+		Case $iDPI = 0
+			$iDPI = 96
+			$iDPIRat = 94
+		Case $iDPI < 84
+			$iDPIRat = $iDPI / 105
+		Case $iDPI < 121
+			$iDPIRat = $iDPI / 96
+		Case $iDPI < 145
+			$iDPIRat = $iDPI / 95
+		Case Else
+			$iDPIRat = $iDPI / 94
+	EndSelect
 	
-    $avRet[0] = 2
-    $avRet[1] = $iDPI
-    $avRet[2] = $iDPIRat
+	$avRet[0] = 2
+	$avRet[1] = $iDPI
+	$avRet[2] = $iDPIRat
 
-    Return $avRet
+	Return $avRet
 EndFunc   ;==>_GetDPI
 #EndRegion
 

@@ -56,7 +56,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="IO\Sound.cs" />
-    <Compile Include="mvvm\CommandHandler.cs" />
+    <Compile Include="MVVM\CommandHandler.cs" />
+    <Compile Include="RichTextBoxHelper.cs" />
     <Compile Include="SoundConfig.xaml.cs">
       <DependentUpon>SoundConfig.xaml</DependentUpon>
     </Compile>

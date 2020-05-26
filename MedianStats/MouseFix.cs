@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MedianStats.Properties;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -20,8 +21,8 @@ namespace MedianStats
 
 		public void Do()
 		{
-			if ((bool)mainInstance._GUI_Option("mousefix") != IsMouseFixEnabled()) {
-				Debug.WriteLine("option: " + (bool)mainInstance._GUI_Option("mousefix") + " enabled? " + IsMouseFixEnabled()  + " => mousefix changed");
+			if (Settings.Default.mousefix != IsMouseFixEnabled()) {
+				Debug.WriteLine("option: " + Settings.Default.mousefix + " enabled? " + IsMouseFixEnabled()  + " => mousefix changed");
 				ToggleMouseFix();
 			}
 		}
@@ -45,12 +46,12 @@ namespace MedianStats
 		public void ToggleMouseFix()
 		{
 			var sWrite = IsMouseFixEnabled() ? "0xA3" + SwapEndian(g_hD2Client + 0x11C3DC) + "A3" + SwapEndian(g_hD2Client + 0x11C3E0) : "0x" + firstfixByte + "909090909090909090";
-			var tetst = NomadMemory._MemoryWriteHexString(g_hD2Client + 0x42AE1, g_ahD2Handle, sWrite /*, "byte[10]"*/);
+			var tetst = NomadMemory.MemoryWriteHexString(g_hD2Client + 0x42AE1, g_ahD2Handle, sWrite /*, "byte[10]"*/);
 		}
 
 		public bool IsMouseFixEnabled()
 		{
-			var testbyte = NomadMemory._MemoryRead(g_hD2Client + 0x42AE1, g_ahD2Handle, new byte[1])[0];
+			var testbyte = NomadMemory.MemoryRead(g_hD2Client + 0x42AE1, g_ahD2Handle, new byte[1])[0];
 			return testbyte.ToString("X2") == firstfixByte;
 		}
 	}

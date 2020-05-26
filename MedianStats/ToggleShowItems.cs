@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MedianStats.Properties;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -18,14 +19,15 @@ namespace MedianStats
 		public void Do()
 		{
 			if (IsShowItemsEnabled()) {
-				if ((bool)mainInstance._GUI_Option("toggleMsg")) {
-					if (NomadMemory._MemoryRead(g_hD2Client + 0xFADB4, g_ahD2Handle) == 0) {
-						if (bShowItems) { mainInstance.PrintString("not showing items.", ePrint.Blue); }
-						bShowItems = false;
-					} else {
-						bShowItems = true;
+				if (NomadMemory.MemoryRead(g_hD2Client + 0xFADB4, g_ahD2Handle) == 0) {
+					if (bShowItems) {
+						mainInstance.PrintString("not showing items.", PrintColor.Blue);
 					}
+					bShowItems = false;
+				} else {
+					bShowItems = true;
 				}
+				// If hotkey is not set, activate non-toggle-mode
 				if ((int)mainInstance._GUI_Option("toggle") == 0) { ToggleShowItems(); }
 			} else {
 				bShowItems = false;
@@ -78,12 +80,12 @@ namespace MedianStats
 				sWrite3 = "0x891D" + SwapEndian(g_hD2Client + 0xFADB4);
 			}
 
-			NomadMemory._MemoryWriteHexString(g_hD2Client + 0x3AECF, g_ahD2Handle, sWrite1);
-			NomadMemory._MemoryWriteHexString(g_hD2Client + 0x3B224, g_ahD2Handle, sWrite2);
-			NomadMemory._MemoryWriteHexString(g_hD2Client + 0x3B2E1, g_ahD2Handle, sWrite3);
+			NomadMemory.MemoryWriteHexString(g_hD2Client + 0x3AECF, g_ahD2Handle, sWrite1);
+			NomadMemory.MemoryWriteHexString(g_hD2Client + 0x3B224, g_ahD2Handle, sWrite2);
+			NomadMemory.MemoryWriteHexString(g_hD2Client + 0x3B2E1, g_ahD2Handle, sWrite3);
 
-			NomadMemory._MemoryWrite(g_hD2Client + 0xFADB4, g_ahD2Handle, new byte[] { 0, 0, 0, 0 });
-			mainInstance.PrintString(bRestore ? "Hold to show items." : "Toggle to show items.", ePrint.Blue);
+			NomadMemory.MemoryWrite(g_hD2Client + 0xFADB4, g_ahD2Handle, new byte[] { 0, 0, 0, 0 });
+			mainInstance.PrintString(bRestore ? "Hold to show items." : "Toggle to show items.", PrintColor.Blue);
 		}
 
 		/// <summary>
@@ -91,7 +93,7 @@ namespace MedianStats
 		/// </summary>
 		public bool IsShowItemsEnabled()
 		{
-			var testByte = NomadMemory._MemoryRead(g_hD2Client + 0x3AECF, g_ahD2Handle, new byte[1])[0];
+			var testByte = NomadMemory.MemoryRead(g_hD2Client + 0x3AECF, g_ahD2Handle, new byte[1])[0];
 			var enabled = testByte == 0x90;
 			//Debug.WriteLine("testbyte: " + testByte + " enabled? "+ enabled);
 			return enabled;

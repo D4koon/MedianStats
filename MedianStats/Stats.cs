@@ -80,10 +80,10 @@ namespace MedianStats
 			var pUnitAddress = GetUnitToRead();
 
 			var aiOffsets = new int[] { 0, 0x5C, (iVector + 1) * 0x24 };
-			var pStatList = _MemoryPointerRead(pUnitAddress, g_ahD2Handle, aiOffsets);
+			var pStatList = MemoryPointerRead(pUnitAddress, g_ahD2Handle, aiOffsets);
 
 			aiOffsets[2] += 0x4;
-			var iStatCount = (ushort)_MemoryPointerRead(pUnitAddress, g_ahD2Handle, aiOffsets, "word") - 1;
+			var iStatCount = (ushort)MemoryPointerRead(pUnitAddress, g_ahD2Handle, aiOffsets, "word") - 1;
 
 			//var tagStat = "word wSubIndex;word wStatIndex;int dwStatValue;";
 			//string tagStatsAll = "";
@@ -120,22 +120,22 @@ namespace MedianStats
 
 		public IntPtr GetUnitWeapon(IntPtr pUnit)
 		{
-			var pInventory = (IntPtr)_MemoryRead(pUnit + 0x60, g_ahD2Handle);
+			var pInventory = (IntPtr)MemoryRead(pUnit + 0x60, g_ahD2Handle);
 
-			var pItem = (IntPtr)_MemoryRead(pInventory + 0x0C, g_ahD2Handle);
-			var iWeaponID = _MemoryRead(pInventory + 0x1C, g_ahD2Handle);
+			var pItem = (IntPtr)MemoryRead(pInventory + 0x0C, g_ahD2Handle);
+			var iWeaponID = MemoryRead(pInventory + 0x1C, g_ahD2Handle);
 
 			IntPtr pItemData = IntPtr.Zero;
 			IntPtr pWeapon = IntPtr.Zero;
 
 			while (pItem != (IntPtr)0) {
-				if (iWeaponID == _MemoryRead(pItem + 0x0C, g_ahD2Handle)) {
+				if (iWeaponID == MemoryRead(pItem + 0x0C, g_ahD2Handle)) {
 					pWeapon = pItem;
 					break;
 				}
 
-				pItemData = (IntPtr)_MemoryRead(pItem + 0x14, g_ahD2Handle);
-				pItem = (IntPtr)_MemoryRead(pItemData + 0x64, g_ahD2Handle);
+				pItemData = (IntPtr)MemoryRead(pItem + 0x14, g_ahD2Handle);
+				pItem = (IntPtr)MemoryRead(pItemData + 0x64, g_ahD2Handle);
 			}
 
 			return pWeapon;
@@ -144,19 +144,19 @@ namespace MedianStats
 		public void CalculateWeaponDamage()
 		{
 			var pUnitAddress = GetUnitToRead();
-			var pUnit = (IntPtr)_MemoryRead(pUnitAddress, g_ahD2Handle);
+			var pUnit = (IntPtr)MemoryRead(pUnitAddress, g_ahD2Handle);
 
 			var pWeapon = GetUnitWeapon(pUnit);
 			if (pWeapon /*not*/ == IntPtr.Zero) { return; }
 
-			var iWeaponClass = _MemoryRead(pWeapon + 0x04, g_ahD2Handle);
-			var pItemsTxt = (IntPtr)_MemoryRead(g_hD2Common + 0x9FB98, g_ahD2Handle);
+			var iWeaponClass = MemoryRead(pWeapon + 0x04, g_ahD2Handle);
+			var pItemsTxt = (IntPtr)MemoryRead(g_hD2Common + 0x9FB98, g_ahD2Handle);
 			var pBaseAddr = pItemsTxt + 0x1A8 * iWeaponClass;
 
-			var iStrBonus = _MemoryRead(pBaseAddr + 0x106, g_ahD2Handle, "word");
-			var iDexBonus = _MemoryRead(pBaseAddr + 0x108, g_ahD2Handle, "word");
-			bool bIs2H = _MemoryRead(pBaseAddr + 0x11C, g_ahD2Handle, "byte") != 0;
-			bool bIs1H = bIs2H ? _MemoryRead(pBaseAddr + 0x13D, g_ahD2Handle, "byte") != 0 : true;
+			var iStrBonus = MemoryRead(pBaseAddr + 0x106, g_ahD2Handle, "word");
+			var iDexBonus = MemoryRead(pBaseAddr + 0x108, g_ahD2Handle, "word");
+			bool bIs2H = MemoryRead(pBaseAddr + 0x11C, g_ahD2Handle, "byte") != 0;
+			bool bIs1H = bIs2H ? MemoryRead(pBaseAddr + 0x13D, g_ahD2Handle, "byte") != 0 : true;
 
 			int iMinDamage1 = 0, iMinDamage2 = 0, iMaxDamage1 = 0, iMaxDamage2 = 0;
 
@@ -203,32 +203,32 @@ namespace MedianStats
 			// itemtype-specific EWD (Elfin Weapons, Shadow Dancer)
 			g_aiStatsCache[1, 343] = 0;
 
-			var pSkillsTxt = (IntPtr)_MemoryRead(g_pD2sgpt + 0xB98, g_ahD2Handle);
+			var pSkillsTxt = (IntPtr)MemoryRead(g_pD2sgpt + 0xB98, g_ahD2Handle);
 			int iSkillID, iStatCount, iStatIndex, iStatValue, iOwnerType, iStateID;
 			IntPtr pStats, pSkill;
 
-			var pItemTypesTxt = (IntPtr)_MemoryRead(g_pD2sgpt + 0xBF8, g_ahD2Handle);
-			var pItemsTxt = (IntPtr)_MemoryRead(g_hD2Common + 0x9FB98, g_ahD2Handle);
+			var pItemTypesTxt = (IntPtr)MemoryRead(g_pD2sgpt + 0xBF8, g_ahD2Handle);
+			var pItemsTxt = (IntPtr)MemoryRead(g_hD2Common + 0x9FB98, g_ahD2Handle);
 			int iWeaponClass, iWeaponType, iItemType;
 
 			var pUnitAddress = GetUnitToRead();
-			var pUnit = (IntPtr)_MemoryRead(pUnitAddress, g_ahD2Handle);
+			var pUnit = (IntPtr)MemoryRead(pUnitAddress, g_ahD2Handle);
 
 			var aiOffsets = new int[] { 0, 0x5C, 0x3C };
-			var pStatList = _MemoryPointerRead(pUnitAddress, g_ahD2Handle, aiOffsets);
+			var pStatList = MemoryPointerRead(pUnitAddress, g_ahD2Handle, aiOffsets);
 
 			while (pStatList != (IntPtr)0) {
-				iOwnerType = _MemoryRead(pStatList + 0x08, g_ahD2Handle);
-				pStats = (IntPtr)_MemoryRead(pStatList + 0x24, g_ahD2Handle);
-				iStatCount = _MemoryRead(pStatList + 0x28, g_ahD2Handle, "word");
-				pStatList = (IntPtr)_MemoryRead(pStatList + 0x2C, g_ahD2Handle);
+				iOwnerType = MemoryRead(pStatList + 0x08, g_ahD2Handle);
+				pStats = (IntPtr)MemoryRead(pStatList + 0x24, g_ahD2Handle);
+				iStatCount = MemoryRead(pStatList + 0x28, g_ahD2Handle, "word");
+				pStatList = (IntPtr)MemoryRead(pStatList + 0x2C, g_ahD2Handle);
 
 				iSkillID = 0;
 
 				for (int i = 0; i < iStatCount; i++) {
 
-					iStatIndex = _MemoryRead(pStats + i * 8 + 2, g_ahD2Handle, "word");
-					iStatValue = _MemoryRead(pStats + i * 8 + 4, g_ahD2Handle, /*"int"*/"dword");
+					iStatIndex = MemoryRead(pStats + i * 8 + 2, g_ahD2Handle, "word");
+					iStatValue = MemoryRead(pStats + i * 8 + 4, g_ahD2Handle, /*"int"*/"dword");
 
 					if (iStatIndex == 350 && iStatValue !=/*<>*/ 511) { iSkillID = iStatValue; }
 					if (iOwnerType == 4 && iStatIndex == 67) { g_aiStatsCache[1, iStatIndex] += iStatValue; } // Armor FRW penalty
@@ -236,7 +236,7 @@ namespace MedianStats
 
 				if (iOwnerType == 4) { continue; }
 
-				iStateID = _MemoryRead(pStatList + 0x14, g_ahD2Handle);
+				iStateID = MemoryRead(pStatList + 0x14, g_ahD2Handle);
 				switch (iStateID) {
 					case 195: // Dark Power, Tome of Possession aura
 						iSkillID = 687; //Dark Power
@@ -248,7 +248,7 @@ namespace MedianStats
 					pSkill = pSkillsTxt + 0x23C * iSkillID;
 
 					for (int i = 0; i <= 4; i++) {
-						iStatIndex = _MemoryRead(pSkill + 0x98 + i * 2, g_ahD2Handle, "word");
+						iStatIndex = MemoryRead(pSkill + 0x98 + i * 2, g_ahD2Handle, "word");
 
 						switch (iStatIndex) {
 							case var n when (n >= 67 && n <= 69):
@@ -259,7 +259,7 @@ namespace MedianStats
 
 					for (int i = 0; i <= 5; i++) {
 
-						iStatIndex = _MemoryRead(pSkill + 0x54 + i * 2, g_ahD2Handle, "word");
+						iStatIndex = MemoryRead(pSkill + 0x54 + i * 2, g_ahD2Handle, "word");
 
 						switch (iStatIndex) {
 							case var n when (n >= 67 && n <= 69):
@@ -271,20 +271,20 @@ namespace MedianStats
 
 				for (int i = 0; i < iStatCount; i++) {
 
-					iStatIndex = _MemoryRead(pStats + i * 8 + 2, g_ahD2Handle, "word");
-					iStatValue = _MemoryRead(pStats + i * 8 + 4, g_ahD2Handle, /*"int"*/"dword");
+					iStatIndex = MemoryRead(pStats + i * 8 + 2, g_ahD2Handle, "word");
+					iStatValue = MemoryRead(pStats + i * 8 + 4, g_ahD2Handle, /*"int"*/"dword");
 
 					switch (iStatIndex) {
 						case var n when (n >= 67 && n <= 69):
 							if (0 ==/*not*/ iSkillID || /*or*/bHasVelocity[iStatIndex - 67]) { g_aiStatsCache[1, iStatIndex] += iStatValue; }
 							break;
 						case 343:
-							iItemType = _MemoryRead(pStats + i * 8 + 0, g_ahD2Handle, "word");
+							iItemType = MemoryRead(pStats + i * 8 + 0, g_ahD2Handle, "word");
 							var pWeapon = GetUnitWeapon(pUnit);
 							if (pWeapon /*not*/ == IntPtr.Zero ||/*or*/ iItemType /*not*/ == 0) { continue; }
 
-							iWeaponClass = _MemoryRead(pWeapon + 0x04, g_ahD2Handle);
-							iWeaponType = _MemoryRead(pItemsTxt + 0x1A8 * iWeaponClass + 0x11E, g_ahD2Handle, "word");
+							iWeaponClass = MemoryRead(pWeapon + 0x04, g_ahD2Handle);
+							iWeaponType = MemoryRead(pItemsTxt + 0x1A8 * iWeaponClass + 0x11E, g_ahD2Handle, "word");
 
 							bool bApply = false;
 							//var aiItemTypes[256] = [1, iWeaponType];
@@ -302,7 +302,7 @@ namespace MedianStats
 									break;
 								}
 								for (int k = 0; k <= 1; k++) {
-									iEquiv = _MemoryRead(pItemTypesTxt + 0xE4 * aiItemTypes[j] + 0x04 + k * 2, g_ahD2Handle, "word");
+									iEquiv = MemoryRead(pItemTypesTxt + 0xE4 * aiItemTypes[j] + 0x04 + k * 2, g_ahD2Handle, "word");
 									if (iEquiv != 0) {
 										aiItemTypes[0] += 1;
 										aiItemTypes[aiItemTypes[0]] = iEquiv;
@@ -326,26 +326,26 @@ namespace MedianStats
 			var pUnitAddress = GetUnitToRead();
 
 			int[] aiOffsets = { 0, 0x60, 0x0C };
-			var pItem = _MemoryPointerRead(pUnitAddress, g_ahD2Handle, aiOffsets);
+			var pItem = MemoryPointerRead(pUnitAddress, g_ahD2Handle, aiOffsets);
 
 			IntPtr pItemData, pStatsEx, pStats;
 			int iStatCount, iStatIndex, iVeteranTokenCounter;
 
 			while (pItem != IntPtr.Zero) {
-				pItemData = (IntPtr)_MemoryRead(pItem + 0x14, g_ahD2Handle);
-				pStatsEx = (IntPtr)_MemoryRead(pItem + 0x5C, g_ahD2Handle);
-				pItem = (IntPtr)_MemoryRead(pItemData + 0x64, g_ahD2Handle);
+				pItemData = (IntPtr)MemoryRead(pItem + 0x14, g_ahD2Handle);
+				pStatsEx = (IntPtr)MemoryRead(pItem + 0x5C, g_ahD2Handle);
+				pItem = (IntPtr)MemoryRead(pItemData + 0x64, g_ahD2Handle);
 
 				if (pStatsEx /*not*/ == IntPtr.Zero) { continue; }
 
-				pStats = (IntPtr)_MemoryRead(pStatsEx + 0x48, g_ahD2Handle);
+				pStats = (IntPtr)MemoryRead(pStatsEx + 0x48, g_ahD2Handle);
 				if (pStats /*not*/ == IntPtr.Zero) { continue; }
 
-				iStatCount = _MemoryRead(pStatsEx + 0x4C, g_ahD2Handle, "word");
+				iStatCount = MemoryRead(pStatsEx + 0x4C, g_ahD2Handle, "word");
 				iVeteranTokenCounter = 0;
 
 				for (int i = 0; i < iStatCount; i++) {
-					iStatIndex = _MemoryRead(pStats + i * 8 + 2, g_ahD2Handle, "word");
+					iStatIndex = MemoryRead(pStats + i * 8 + 2, g_ahD2Handle, "word");
 
 					switch (iStatIndex) {
 						case 83:

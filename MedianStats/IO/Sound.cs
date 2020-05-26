@@ -16,6 +16,12 @@ namespace MedianStats.IO
 		public string FilePath { get; set; }
 		public double Volume { get; set; }
 
+		/// <summary>
+		/// ATTENTION: It is importent to keep the reference to the MediaPlayer-object, otherwise it can happen that it will get garbage-collected before the sound even plays.
+		/// That means .Play() is called and then it is garbage-collected...
+		/// </summary>
+		private MediaPlayer mediaPlayer;
+
 		/// <summary>Needed for serializiation</summary>
 		public Sound() { }
 
@@ -28,23 +34,30 @@ namespace MedianStats.IO
 
 		public void Play()
 		{
-			Debug.WriteLine("Play sound: " + FilePath);
+			//Debug.WriteLine("Play sound: " + FilePath);
 			PlaySound(FilePath, Volume);
 		}
 
-		public static void PlaySound(string soundRelativeFilePath, double volume)
+		public void PlaySound(string soundRelativeFilePath, double volume)
 		{
 			PlaySound(new Uri(soundRelativeFilePath, UriKind.Relative), volume);
 		}
 
-		public static void PlaySound(Uri soundFileUri, double volume)
+		public void PlaySound(Uri soundFileUri, double volume)
 		{
 			if (volume > 0) {
-				var mediaPlayer = new MediaPlayer();
+				Debug.WriteLine($"Play sound: '{soundFileUri}' Volume: {volume}");
+				mediaPlayer = new MediaPlayer();
+				mediaPlayer.MediaFailed += MediaPlayer_MediaFailed;
 				mediaPlayer.Open(soundFileUri);
 				mediaPlayer.Volume = volume;
 				mediaPlayer.Play();
 			}
+		}
+
+		private static void MediaPlayer_MediaFailed(object sender, ExceptionEventArgs e)
+		{
+			Debug.WriteLine($"Play sound failed");
 		}
 	}
 

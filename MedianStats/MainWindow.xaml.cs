@@ -38,25 +38,30 @@ namespace MedianStats
 			mainInstance = this;
 			ExeDir = System.Reflection.Assembly.GetExecutingAssembly().Location.Substring(0, System.Reflection.Assembly.GetExecutingAssembly().Location.LastIndexOf('\\'));
 
-			notifierText.Text = Settings.Default.notifierText.Length > 0 ? Properties.Settings.Default.notifierText : notifierTextDefault;
-			_GUI_Option("notify-text", notifierText.Text);
+			notifierText.AppendText(Settings.Default.notifierText.Length > 0 ? Settings.Default.notifierText : notifierTextDefault);
 
+			notifyEnabled.IsChecked = Settings.Default.notifyEnabled;
+			notifySuperior.IsChecked = Settings.Default.notifySuperior;
 			mousefix.IsChecked = Settings.Default.mousefix;
+			nopickup.IsChecked = Settings.Default.nopickup;
+			toggle.IsChecked = Settings.Default.toggleShowItems;
 
 			InitVolumeSliders();
 
 
-
 			notifierText.TextChanged += (unused1, unused2) =>
 			{
-				Properties.Settings.Default.notifierText = notifierText.Text;
+				// Because this trigges even if only the formating of the text changes we have to check here if the text has really changed.
+				if (Settings.Default.notifierText.Equals(notifierText.GetAllText().Text)) {
+					return;
+				}
+				Settings.Default.notifierText = notifierText.GetAllText().Text;
+				Settings.Default.Save();
 				notifier.NeedUpdateList = true;
-				_GUI_Option("notify-text", notifierText.Text);
 			};
 
 			Task.Run(() => Main());
 		}
-
 		private void InitVolumeSliders()
 		{
 			// Remove dummy.
@@ -69,18 +74,33 @@ namespace MedianStats
 				var soundconfig = new SoundConfig() { Sound = soundIt, ID = i };
 				volumneSliders.Children.Add(soundconfig);
 
-				notifier.sounds.Add(i, Settings.Default.notifierSounds[i]);
+				notifier.Sounds.Add(i, Settings.Default.notifierSounds[i]);
 			}
 		}
 
+		private void Button_Click(object sender, RoutedEventArgs e)
+		{
+			NotifierLineAsError(1);
+		}
 
 
-		const int UBOUND_COLUMNS = 2;
-		
+		public void NotifierLineAsError(int lineNumber)
+		{
+			if (!CheckAccess()) {
+				Dispatcher.Invoke(() => notifierText.SetLineBackgroundColor(lineNumber, Brushes.Red));
+			}
+		}
+
+		public void NotifierLinesClearError()
+		{
+			if (!CheckAccess()) {
+				Dispatcher.Invoke(() => notifierText.SetPropertyForAllText(TextElement.BackgroundProperty, Brushes.White));
+			}
+		}
+
 		/// <summary>Dummy-value. this will not be used anyway</summary>
 		const int HK_FLAG_D2STATS = 0; /*BitOR($HK_FLAG_DEFAULT, $HK_FLAG_NOUNHOOK);*/
 
-		const int g_iGUIOptionsGeneral = 4;
 		const int g_iGUIOptionsHotkey = 6;
 
 		const int g_iColorRed	= 0xFF0000;
@@ -91,19 +111,13 @@ namespace MedianStats
 
 		static readonly string notifierTextDefault = ByteArrayToString(HexStringToByteArray("0x3120322033203420756E69717565202020202020202020202020202020232054696572656420756E69717565730D0A73616372656420756E6971756520202020202020202020202020202020232053616372656420756E69717565730D0A2252696E67247C416D756C6574247C4A6577656C2220756E69717565202320556E69717565206A6577656C72790D0A225175697665722220756E697175650D0A7365740D0A2242656C6C61646F6E6E61220D0A22536872696E65205C28313022202020202020202020202020202020202320536872696E65730D0A23225175697665722220726172650D0A232252696E67247C416D756C6574222072617265202020202020202020202320526172652072696E677320616E6420616D756C6574730D0A2373616372656420657468207375706572696F7220726172650D0A0D0A225369676E6574206F66204C6561726E696E67220D0A2247726561746572205369676E6574220D0A22456D626C656D220D0A2254726F706879220D0A224379636C65220D0A22456E6368616E74696E67220D0A2257696E6773220D0A2252756E6573746F6E657C457373656E63652422202320546567616E7A652072756E65730D0A2247726561742052756E6522202020202020202020232047726561742072756E65730D0A224F72625C7C2220202020202020202020202020202320554D4F730D0A224F696C206F6620436F6E6A75726174696F6E220D0A232252696E67206F66207468652046697665220D0A0D0A232048696465206974656D730D0A686964652031203220332034206C6F77206E6F726D616C207375706572696F72206D6167696320726172650D0A6869646520225E2852696E677C416D756C6574292422206D616769630D0A68696465202251756976657222206E6F726D616C206D616769630D0A6869646520225E28416D6574687973747C546F70617A7C53617070686972657C456D6572616C647C527562797C4469616D6F6E647C536B756C6C7C4F6E79787C426C6F6F6473746F6E657C54757271756F6973657C416D6265727C5261696E626F772053746F6E652924220D0A6869646520225E466C61776C657373220D0A73686F77202228477265617465727C537570657229204865616C696E6720506F74696F6E220D0A686964652022284865616C696E677C4D616E612920506F74696F6E220D0A6869646520225E4B657924220D0A6869646520225E28456C7C456C647C5469727C4E65667C4574687C4974687C54616C7C52616C7C4F72747C5468756C7C416D6E7C536F6C7C536861656C7C446F6C7C48656C7C496F7C4C756D7C4B6F7C46616C7C4C656D7C50756C7C556D7C4D616C7C4973747C47756C7C5665787C4F686D7C4C6F7C5375727C4265727C4A61687C4368616D7C5A6F64292052756E652422"));
 		
-		int g_idVolumeSlider;
-
-		/*for $i = 1 to g_iNumSounds
-			g_asnotifyFlags[enotifyFlags.Sound][$i] = "sound" & $i;
-		}*/
-
 		bool g_bHotkeysEnabled = false;
 		int g_hTimerCopyName = 0;
 		string g_sCopyName = "";
 
-		public enum ePrint
+		public enum PrintColor
 		{
-			 White,  Red,  Lime,  Blue,  Gold,  Grey,  Black,  Unk,  Orange,  Yellow,  Green,  Purple
+			White, Red, Lime, Blue, Gold, Grey, Black, Unk, Orange, Yellow, Green, Purple
 		}
 
 		public bool g_bnotifierChanged = false;
@@ -116,18 +130,12 @@ namespace MedianStats
 
 		public IntPtr g_pD2sgpt, g_pD2InjectPrint, g_pD2InjectString, g_pD2InjectGetString;
 
-		object[][] g_avGUIOptionList = new object[][] { 
-			new object[] {"nopickup", false, "cb", "Automatically enable /nopickup"}, 
-			new object[] {"mousefix", false, "cb", "Continue attacking when monster dies under cursor"}, 
-			new object[] {"notify-enabled", true, "cb", "Enable notifier"}, 
-			new object[] {"notify-superior", false, "cb", "notifier prefixes superior items with 'Superior'"}, 
+		object[][] guiOptionList = new object[][] {
 			new object[] {"copy", 0x002D, "hk", "Copy item text", "HotKey_CopyItem"}, 
 			new object[] {"copy-name", 0, "cb", "Only copy item name"}, 
-			new object[] {"filter", 0x0124, "hk", "Inject/eject DropFilter", "HotKey_DropFilter"}, 
-			new object[] {"toggle", 0x0024, "hk", "Switch Show Items between hold/toggle mode", "HotKey_ToggleShowItems"}, 
-			new object[] {"toggleMsg", true, "cb", "Message when Show Items is disabled in toggle mode"}, 
+			new object[] {"filter", 0x0124, "hk", "Inject/eject DropFilter", "HotKey_DropFilter"},
+			new object[] {"toggle", 0x0024, "hk", "Switch Show Items between hold/toggle mode", "HotKey_ToggleShowItems"},
 			new object[] {"readstats", 0x0000, "hk", "Read stats without tabbing out of the game", "HotKey_ReadStats"},
-			new object[] {"notify-text", notifierTextDefault, "tx"} 
 		};
 
 		#region Main
@@ -159,7 +167,7 @@ namespace MedianStats
 				if (IsIngame()) {
 					if (!bIsIngame) {
 						// Reset the notify-cache
-						notifier.NotifyCache = null;
+						Notifier.ItemCache = null;
 
 						//AutoItApi.GUICtrlSetState(g_idnotifyTest, GUI_ENABLE);
 					}
@@ -172,9 +180,14 @@ namespace MedianStats
 
 					noPickup.Do(bIsIngame);
 
-					if ((bool)_GUI_Option("notify-enabled")) {
+					if (Settings.Default.notifyEnabled) {
 						notifier.NotifierMain();
-						notifierTextBackground = notifier.MatchListHasError ? Brushes.Red : SystemColors.WindowBrush;
+						
+						// The following implementation is not pretty but it should work good enough for now
+						NotifierLinesClearError();
+						foreach (var errorLineNumber in notifier.MatchErrorLines) {
+							NotifierLineAsError(errorLineNumber);
+						}
 					}
 
 					bIsIngame = true;
@@ -259,7 +272,6 @@ namespace MedianStats
 			bool value = ((CheckBox)sender).IsChecked.Value;
 			Settings.Default.mousefix = value;
 			Settings.Default.Save();
-			_GUI_Option("mousefix", value);
 		}
 
 		public bool IsIngame()
@@ -267,15 +279,15 @@ namespace MedianStats
 			if (g_iD2pid == 0) {
 				return false;
 			}
-			return _MemoryRead(g_hD2Client + 0x11BBFC, g_ahD2Handle) != 0;
+			return MemoryRead(g_hD2Client + 0x11BBFC, g_ahD2Handle) != 0;
 		}
 
 		public int GetIlvl()
 		{
 			var apOffsetsIlvl = new int[] { 0, 0x14, 0x2C };
-			var iRet = _MemoryPointerRead(g_hD2Client + 0x11BC38, g_ahD2Handle, apOffsetsIlvl);
+			var iRet = MemoryPointerRead(g_hD2Client + 0x11BC38, g_ahD2Handle, apOffsetsIlvl);
 			if (iRet /*not*/ == (IntPtr)0) {
-				PrintString("Hover the cursor over an item first.", ePrint.Red);
+				PrintString("Hover the cursor over an item first.", PrintColor.Red);
 			}
 			return (int)iRet;
 		}
@@ -289,7 +301,7 @@ namespace MedianStats
 		public void _CloseHandle()
 		{
 			if (g_ahD2Handle != IntPtr.Zero) {
-				_MemoryClose(g_ahD2Handle);
+				MemoryClose(g_ahD2Handle);
 				g_ahD2Handle = IntPtr.Zero;
 				g_iD2pid = 0;
 			}
@@ -310,7 +322,7 @@ namespace MedianStats
 
 			_CloseHandle();
 			g_iUpdateFailCounter += 1;
-			g_ahD2Handle = _MemoryOpen((int)iPID);
+			g_ahD2Handle = MemoryOpen((int)iPID);
 			if (g_ahD2Handle == IntPtr.Zero) {
 				throw new Exception("UpdateHandle: Couldn't open Diablo II memory handle. No Admin rights?");
 			}
@@ -328,13 +340,13 @@ namespace MedianStats
 
 			g_iUpdateFailCounter = 0;
 			g_iD2pid = iPID;
-			g_pD2sgpt = (IntPtr)_MemoryRead(g_hD2Common + 0x99E1C, g_ahD2Handle);
+			g_pD2sgpt = (IntPtr)MemoryRead(g_hD2Common + 0x99E1C, g_ahD2Handle);
 		}
 
 		public bool UpdateDllHandles()
 		{
 			var pLoadLibraryW = GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryW");
-			if (/*not*/ IntPtr.Zero == pLoadLibraryW) { throw new Exception("UpdateDllHandles: Couldn't retrieve LoadLibraryA address."); }
+			if (IntPtr.Zero == pLoadLibraryW) { throw new Exception("UpdateDllHandles: Couldn't retrieve LoadLibraryA address."); }
 
 			//var pAllocAddress = _MemVirtualAllocEx(g_ahD2Handle[1], 0, 0x100, BitOR(MEM_COMMIT, MEM_RESERVE), PAGE_EXECUTE_READWRITE);
 			var pAllocAddress = VirtualAllocEx(g_ahD2Handle, IntPtr.Zero, 0x100, AllocationType.Commit | AllocationType.Reserve, MemoryProtection.ExecuteReadWrite);
@@ -347,7 +359,7 @@ namespace MedianStats
 			var bFailed = false;
 
 			for (int i = 0; i < iDLLs; i++) {
-				_MemoryWrite(pAllocAddress, g_ahD2Handle, g_asDLL[i] + '\0');
+				MemoryWrite(pAllocAddress, g_ahD2Handle, g_asDLL[i] + '\0');
 				hDLLHandle[i] = (IntPtr)RemoteThread(pLoadLibraryW, pAllocAddress);
 				if (hDLLHandle[i] == IntPtr.Zero) {
 					bFailed = true;
@@ -364,7 +376,7 @@ namespace MedianStats
 			g_pD2InjectGetString = pD2Inject + 0x10;
 			g_pD2InjectString = pD2Inject + 0x20;
 
-			g_pD2sgpt = (IntPtr)_MemoryRead(g_hD2Common + 0x99E1C, g_ahD2Handle);
+			g_pD2sgpt = (IntPtr)MemoryRead(g_hD2Common + 0x99E1C, g_ahD2Handle);
 
 			//_MemVirtualFreeEx(g_ahD2Handle[1], pAllocAddress, 0x100, MEM_RELEASE);
 			var tets = Marshal.GetLastWin32Error();
@@ -399,9 +411,9 @@ namespace MedianStats
 
 		public bool InjectCode(IntPtr pWhere, string sCode)
 		{
-			_MemoryWriteHexString(pWhere, g_ahD2Handle, sCode);
+			MemoryWriteHexString(pWhere, g_ahD2Handle, sCode);
 
-			var iConfirm = _MemoryRead(pWhere, g_ahD2Handle);
+			var iConfirm = MemoryRead(pWhere, g_ahD2Handle);
 			//throw new Exception("Den vergleich unterhalb nochmal genau anschauen was da abgeht");
 			return SwapEndian((IntPtr)iConfirm) == sCode.Substring(2, 8);
 		}
@@ -528,80 +540,35 @@ namespace MedianStats
 
 		private void Nopickup_Changed(object sender, RoutedEventArgs e)
 		{
-			_GUI_Option("nopickup", ((CheckBox)sender).IsChecked.Value);
+			Settings.Default.nopickup = ((CheckBox)sender).IsChecked.Value;
+			Settings.Default.Save();
 		}
 
-		//public void HotKey_ToggleShowItems(bool TEST = false)
 		private void Toggle_Changed(object sender, RoutedEventArgs e)
 		{
-			if (/*TEST ||*/ IsIngame() == false) { return; }
-			//if (((CheckBox)sender).IsChecked.Value) {
+			if (IsIngame() == false) { return; }
 
-			//}
+			Settings.Default.toggleShowItems = ((CheckBox)sender).IsChecked.Value;
+			Settings.Default.Save();
+
 			showItems.ToggleShowItems();
 		}
 
-		//public void HotKey_ReadStats() {
-		//	OnClick_ReadStats();
-		//}
+		private void NotifyEnabled_Changed(object sender, RoutedEventArgs e)
+		{
+			Settings.Default.notifyEnabled = ((CheckBox)sender).IsChecked.Value;
+			Settings.Default.Save();
+		}
+
+		private void NotifySuperior_Changed(object sender, RoutedEventArgs e)
+		{
+			Settings.Default.notifySuperior = ((CheckBox)sender).IsChecked.Value;
+			Settings.Default.Save();
+		}
+
 		#endregion
 
 		#region GUI helper functions
-
-		//public void _GUI_GroupX(iX = default)
-		//	if (iX !=/*<>*/ default) { g_avGUI[0][1] = iX;
-		//	return g_avGUI[0][1];
-		//}
-
-		//public void _GUI_GroupFirst() {
-		//	g_avGUI[0][1] = g_iGroupXStart;
-		//}
-
-		//public void _GUI_Groupnext() {
-		//	g_avGUI[0][1] += g_iGroupWidth;
-		//}
-
-		//public void _GUI_ItemCount() {
-		//	return g_avGUI[0][0];
-		//}
-
-		//public void _GUI_NewItem($iLine, $sText, $sTip = default, $iColor = default)
-		//	g_avGUI[0][0] += 1;
-		//	var iCount = g_avGUI[0][0];
-
-		//	g_avGUI[$iCount][0] = $sText;
-		//	g_avGUI[$iCount][1] = _GUI_GroupX();
-		//	g_avGUI[$iCount][2] = _GUI_NewText($iLine, $sText, $sTip, $iColor);
-		//}
-
-		//public void _GUI_NewText($iLine, $sText, $sTip = default, $iColor = default)
-		//	var idRet = _GUI_NewTextBasic($iLine, $sText);
-
-		//	; GUICtrlSetBkColor(-1, Random(0, 2147483647, 1))
-		//	if ($sTip !=/*<>*/ default) {
-		//		GUICtrlSetTip(-1, StringReplace($sTip, "|", @LF), default, default, $TIP_CENTER);
-		//	}
-		//	if ($iColor >= default) {
-		//		GUICtrlSetColor(-1, $iColor);
-		//	}
-		//	return $idRet
-		//}
-
-		//public void _GUI_NewTextBasic($iLine, $sText, $bCentered = true)
-		//	var iWidth = _GUI_StringWidth($sText);
-		//	var iX = _GUI_GroupX() - ($bCentered ? $iWidth/2 : 0);
-		//	return GUICtrlCreateLabel($sText, $iX, _GUI_LineY($iLine), $iWidth, 15, $bCentered ? $SS_CENTER : $SS_LEFT);
-		//}
-
-		//public void _GUI_ItemByRef($iItem, byref $sText, byref $iX, byref $idControl)
-		//	$sText = g_avGUI[$iItem][0];
-		//	$iX = g_avGUI[$iItem][1];
-		//	$idControl = g_avGUI[$iItem][2];
-		//}
-
-		//public void _GUI_OptionCount() {
-		//	return g_avGUIOption[0][0];
-		//}
 
 		//public void _GUI_NewOption($iLine, $sOption, $sText, $sFunc = "")
 		//	var iY = _GUI_LineY($iLine)*2 - _GUI_LineY(0);
@@ -644,39 +611,22 @@ namespace MedianStats
 		//	g_avGUIOption[$iIndex][2] = $sFunc;
 		//}
 
-		//public void _GUI_OptionByRef($iOption, byref $sOption, byref $idControl, byref $sFunc)
-		//	$sOption = g_avGUIOption[$iOption][0];
-		//	$idControl = g_avGUIOption[$iOption][1];
-		//	$sFunc = g_avGUIOption[$iOption][2];
-		//}
-
-		//public void _GUI_OptionExists($sOption)
-		//	for $i = 0 to UBound(g_avGUIOptionList) - 1
-		//		if (g_avGUIOptionList[$i][0] == $sOption) { return true;
-		//	}
-		//	return false;
-		//}
-
-		public int _GUI_OptionID(string sOption)
+		public int GUI_OptionID(string sOption)
 		{
-			for (int i = 0; i <= /*UBound*/(g_avGUIOptionList).Length - 1; i++) {
-				if ((string)g_avGUIOptionList[i][0] == sOption) { return i; }
+			for (int i = 0; i < guiOptionList.Length; i++) {
+				if ((string)guiOptionList[i][0] == sOption) { return i; }
 			}
 			throw new Exception("_GUI_OptionID: Invalid option '" + sOption + "'");
 			return -1;
 		}
 
-		//public void _GUI_OptionType($sOption)
-		//	return g_avGUIOptionList[ _GUI_OptionID($sOption) ][2];
-		//}
-
 		public object _GUI_Option(string sOption, object vValue = null)
 		{
-			var iOption = _GUI_OptionID(sOption);
-			var vOld = g_avGUIOptionList[iOption][1];
+			var iOption = GUI_OptionID(sOption);
+			var vOld = guiOptionList[iOption][1];
 
 			if (vValue != null && vValue != vOld) {
-				g_avGUIOptionList[iOption][1] = vValue;
+				guiOptionList[iOption][1] = vValue;
 			}
 
 			return vOld;
@@ -685,38 +635,6 @@ namespace MedianStats
 		//#EndRegion
 
 		//#Region GUI
-
-		//public void OnClick_notifyReset() {
-		//	GUICtrlSetData($g_idnotifyEdit, _GUI_Option("notify-text"));
-		//	OnChange_notifyEdit();
-		//}
-
-		//public void OnClick_notifyDefault() {
-		//	GUICtrlSetData($g_idnotifyEdit, $g_snotifyTextDefault);
-		//	OnChange_notifyEdit();
-		//}
-
-		//public void OnChange_notifyEdit() {
-		//	var iState = _GUI_Option("notify-text") == GUICtrlRead($g_idnotifyEdit) ? $GUI_DISABLE : $GUI_ENABLE;
-		//	AutoItApi.GUICtrlSetState($g_idnotifySave, $iState);
-		//	AutoItApi.GUICtrlSetState($g_idnotifyReset, $iState);
-		//}
-
-		//public void OnChange_VolumeSlider() {
-		//	SaveGUIVolume();
-		//}
-
-		//public void OnClick_VolumeTest() {
-		//	// Hacky way of getting a sound test button's sound index through the Sound # label
-		//	var sText = GUICtrlRead(@GUI_CtrlId - 1);
-		//	var asWords = StringSplit($sText, " ");
-		//	var iIndex = Int($asWords[2]);
-		//	notifierPlaySound($iIndex);
-		//}
-
-		//public void OnClick_Forum() {
-		//	ShellExecute("https://forum.median-xl.com/viewtopic.php?f=4&t=3702");
-		//}
 
 		public void CreateGUI() {
 
@@ -1014,78 +932,19 @@ namespace MedianStats
 		//	}
 		//}
 
-		//public void SaveGUISettings() {
-		//	var sWrite = "", $vValue
-		//	for $i = 0 to UBound(g_avGUIOptionList) - 1
-		//		$vValue = g_avGUIOptionList[$i][1]
-		//		if (g_avGUIOptionList[$i][2] == "tx") { $vValue = StringToBinary($vValue)
-		//		$sWrite &= StringFormat("%s=%s%s", g_avGUIOptionList[$i][0], $vValue, @LF)
-		//	}/*next*/
-		//	IniWriteSection(@AutoItExe & ".ini", "General", $sWrite)
-		//}
-
-		//public void LoadGUISettings() {
-		//	var asIniGeneral = IniReadSection(@AutoItExe & ".ini", "General")
-		//	if (not @error) {
-		//		var vValue
-		//		for $i = 1 to $asIniGeneral[0][0]
-		//			if (_GUI_OptionExists($asIniGeneral[$i][0])) {
-		//				$vValue = $asIniGeneral[$i][1]
-		//				$vValue = _GUI_OptionType($asIniGeneral[$i][0]) == "tx" ? BinaryToString($vValue) : Int($vValue)
-		//				_GUI_Option($asIniGeneral[$i][0], $vValue)
-		//			}
-		//		}/*next*/
-
-		//		var bConflict = false
-		//		var iEnd = UBound(g_avGUIOptionList) - 1
-
-		//		for $i = 0 to $iEnd
-		//			if (g_avGUIOptionList[$i][2] !=/*<>*/ "hk" || /*or*/g_avGUIOptionList[$i][1] == 0x0000) { continueloop
-
-		//			for $j = $i+1 to $iEnd
-		//				if (g_avGUIOptionList[$j][2] !=/*<>*/ "hk") { continueloop
-
-		//				if (g_avGUIOptionList[$i][1] == g_avGUIOptionList[$j][1]) {
-		//					g_avGUIOptionList[$j][1] = 0
-		//					$bConflict = true
-		//				}
-		//			}/*next*/
-		//		}/*next*/
-
-		//		if ($bConflict) { MsgBox($MB_ICONWARNING, "D2Stats", "Hotkey conflict! One || /*or*/more hotkeys disabled.")
-		//	}
-		//}
-
-		//public void SaveGUIVolume() {
-		//	var sWrite = "";
-		//	for $i = 0 to g_iNumSounds - 1
-		//		$sWrite &= StringFormat("%s=%s%s", $i, _GUI_Volume($i), @LF);
-		//	}/*next*/
-		//	IniWriteSection(@AutoItExe & ".ini", "Volume", $sWrite);
-		//}
-
-		//public void LoadGUIVolume() {
-		//	var asIniVolume = IniReadSection(@AutoItExe & ".ini", "Volume");
-		//	if (! @error) {
-		//		var iIndex, $iValue;
-		//		for $i = 1 to $asIniVolume[0][0]
-		//			$iIndex = Int($asIniVolume[$i][0]);
-		//			$iValue = Int($asIniVolume[$i][1]);
-		//			if ($iIndex < g_iNumSounds) { _GUI_Volume($iIndex, $iValue); }
-		//		}/*next*/
-		//	}
-		//}
-
 		#endregion
 
 		#region Injection
-		public uint RemoteThread(IntPtr pFunc) // $var is in EBX register
+		public uint RemoteThread(IntPtr pFunc)
 		{
+			// $var is in EBX register
 			return RemoteThread(pFunc, IntPtr.Zero);
 		}
 
-		public uint RemoteThread(IntPtr pFunc, IntPtr iVar) // $var is in EBX register
+		public uint RemoteThread(IntPtr pFunc, IntPtr iVar)
 		{
+			// $var is in EBX register
+
 			//var aResult = DllCall(g_ahD2Handle[0], "ptr", "CreateRemoteThread", "ptr", g_ahD2Handle[1], "ptr", 0, "uint", 0, "ptr", pFunc, "ptr", iVar, "dword", 0, "ptr", 0);
 			var aResult = CreateRemoteThread(g_ahD2Handle, (IntPtr)0, 0, pFunc, (IntPtr)iVar, 0, (IntPtr)0);
 			var hThread = aResult;
@@ -1114,7 +973,7 @@ namespace MedianStats
 			return result.ToString("X4");
 		}
 
-		public bool PrintString(string sString, ePrint iColor = ePrint.White)
+		public bool PrintString(string sString, PrintColor iColor = PrintColor.White)
 		{
 			if (!IsIngame()) {
 				return false;
@@ -1140,7 +999,7 @@ namespace MedianStats
 			}
 
 			try {
-				_MemoryWrite(g_pD2InjectString, g_ahD2Handle, sString + '\0');
+				MemoryWrite(g_pD2InjectString, g_ahD2Handle, sString + '\0');
 			} catch {
 				throw new Exception("WriteWString: Failed to write string.");
 			}
@@ -1221,6 +1080,5 @@ namespace MedianStats
 		//}
 
 		#endregion
-
 	}
 }

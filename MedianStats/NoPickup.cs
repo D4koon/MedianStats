@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MedianStats.Properties;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -16,8 +17,8 @@ namespace MedianStats
 		// NOTE: bIsIngame is more a changed-event
 		public void Do(bool bIsIngame)
 		{
-			if (mainInstance.IsIngame() && (bool)mainInstance._GUI_Option("nopickup") != IsEnabled()) {
-				Set((bool)mainInstance._GUI_Option("nopickup"));
+			if (mainInstance.IsIngame() && Settings.Default.nopickup != IsEnabled()) {
+				Set(Settings.Default.nopickup);
 			}
 		}
 
@@ -28,12 +29,12 @@ namespace MedianStats
 		{
 			byte value = (byte)(isEnabled ? 1 : 0);
 
-			var test = NomadMemory._MemoryWrite(g_hD2Client + 0x11C2F0, g_ahD2Handle, new byte[] { value });
+			var test = NomadMemory.MemoryWrite(g_hD2Client + 0x11C2F0, g_ahD2Handle, new byte[] { value });
 
 			if (test == 1) {
-				mainInstance.PrintString("NoPickup: " + (isEnabled ? "true" : "false"), ePrint.Blue);
+				mainInstance.PrintString("NoPickup: " + (isEnabled ? "true" : "false"), PrintColor.Blue);
 			} else {
-				mainInstance.PrintString("Setting NoPickup to " + (isEnabled ? "true" : "false") + " failed.", ePrint.Red);
+				mainInstance.PrintString("Setting NoPickup to " + (isEnabled ? "true" : "false") + " failed.", PrintColor.Red);
 			}
 
 			return test == 1;
@@ -44,7 +45,7 @@ namespace MedianStats
 		/// </summary>
 		public bool IsEnabled()
 		{
-			var testByte = NomadMemory._MemoryRead(g_hD2Client + 0x11C2F0, g_ahD2Handle, new byte[1])[0];
+			var testByte = NomadMemory.MemoryRead(g_hD2Client + 0x11C2F0, g_ahD2Handle, new byte[1])[0];
 			var enabled = testByte == 1;
 			//Debug.WriteLine("NoPickup::IsEnabled() " + enabled + " testByte: " + testByte);
 			return enabled;

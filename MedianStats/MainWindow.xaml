@@ -15,9 +15,19 @@
 			<TabItem Header="Notifier">
 				<TabControl TabStripPlacement="Bottom">
 					<TabItem Header="Triggers">
-						<ScrollViewer>
-							<TextBox VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="notifierText" AcceptsReturn="True" FontFamily="Courier New"></TextBox>
-						</ScrollViewer>
+						<RichTextBox VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="notifierText" FontFamily="Courier New">
+							<RichTextBox.Resources>
+								<!-- Set vertical space between newlines for paragraphs -->
+								<Style TargetType="{x:Type Paragraph}">
+									<Setter Property="Margin" Value="0"/>
+								</Style>
+							</RichTextBox.Resources>
+							<!-- Set PageWidth so no text-wrapping happens see: https://stackoverflow.com/questions/1368047/c-wpf-disable-text-wrap-of-richtextbox/1369184#1369184 -->
+							<FlowDocument PageWidth="100000">
+								<Paragraph>
+								</Paragraph>
+							</FlowDocument>
+						</RichTextBox>
 					</TabItem>
 					<TabItem Header="Sounds">
 						<StackPanel>
@@ -67,6 +77,8 @@
 			<TabItem Header="Options">
 				<Grid>
 					<StackPanel>
+						<CheckBox x:Name="notifyEnabled" Checked="NotifyEnabled_Changed" Unchecked="NotifyEnabled_Changed">Enable notifier</CheckBox>
+						<CheckBox x:Name="notifySuperior" Checked="NotifySuperior_Changed" Unchecked="NotifySuperior_Changed">notifier prefixes superior items with 'Superior'</CheckBox>
 						<CheckBox x:Name="toggle" Checked="Toggle_Changed" Unchecked="Toggle_Changed">Switch Show Items between hold/toggle mode</CheckBox>
 						<CheckBox x:Name="mousefix" Checked="Mousefix_Changed" Unchecked="Mousefix_Changed">Continue attacking when monster dies under cursor</CheckBox>
 						<CheckBox x:Name="nopickup" Checked="Nopickup_Changed" Unchecked="Nopickup_Changed">Always activate /nopickup</CheckBox>
