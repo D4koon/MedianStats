@@ -1,7 +1,14 @@
 # MedianStats
-A tool for Median XL - A Diablo2 Mod
+A enhancement-tool for Median XL - A Diablo2 Mod
 
-Is still in beta-phase. Most things are working but has some rough edges
+Features
+- Drop-notifier with sounds
+  - Sounds can be customized
+- Read the stats of your character and merc
+- Optional: toggle-mode for items on the floor.
+  - This means items are always shown or never shown
+- Optional: continue attacking when monster dies under cursor
+- Optional: Always activate /nopickup
 
 ---
 
