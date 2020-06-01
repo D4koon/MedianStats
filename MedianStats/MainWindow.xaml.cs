@@ -65,6 +65,8 @@ namespace MedianStats
 			NomadMemory.EnableSE();
 
 			Task.Run(() => Main());
+
+			this.Show();
 		}
 
 		private void InitVolumeSliders()
