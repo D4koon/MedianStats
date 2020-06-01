@@ -5,7 +5,7 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:MedianStats"
 		mc:Ignorable="d"
-		Title="MedianStats" Height="500" Width="800" Closing="Window_Closing">
+		Title="MedianStats" Height="500" Width="800" Closing="Window_Closing" Icon="resources/logo.ico">
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*"/>

@@ -122,6 +122,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="resources\logo.ico" />
     <Content Include="resources\sound1.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
