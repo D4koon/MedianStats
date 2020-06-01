@@ -12,6 +12,8 @@ An enhancement-tool for Median XL - A Diablo2 Mod
 - Optional: continue attacking when monster dies under cursor
 - Optional: Always activate /nopickup
 
+![MedianStats AppPreview](/MedianStats/resources/AppPreview.png)
+
 ---
 
 </hl>
