@@ -60,8 +60,13 @@ namespace MedianStats
 				notifier.NeedUpdateList = true;
 			};
 
+			// This is necessary to get the rights to for OpenProcess.
+			// WARNING: If the program is run from Visual Studio this is not needes since the Process already has that rights
+			NomadMemory.EnableSE();
+
 			Task.Run(() => Main());
 		}
+
 		private void InitVolumeSliders()
 		{
 			// Remove dummy.
@@ -77,12 +82,6 @@ namespace MedianStats
 				notifier.Sounds.Add(i, Settings.Default.notifierSounds[i]);
 			}
 		}
-
-		private void Button_Click(object sender, RoutedEventArgs e)
-		{
-			NotifierLineAsError(1);
-		}
-
 
 		public void NotifierLineAsError(int lineNumber)
 		{
@@ -322,9 +321,11 @@ namespace MedianStats
 
 			_CloseHandle();
 			g_iUpdateFailCounter += 1;
-			g_ahD2Handle = MemoryOpen((int)iPID);
+			g_ahD2Handle = OpenProcess((int)iPID);
 			if (g_ahD2Handle == IntPtr.Zero) {
-				throw new Exception("UpdateHandle: Couldn't open Diablo II memory handle. No Admin rights?");
+				// https://docs.microsoft.com/en-au/windows/win32/debug/system-error-codes
+				var lastWin32Error = Marshal.GetLastWin32Error();
+				throw new Exception($"UpdateHandle: Couldn't open Diablo II memory handle. No Admin rights? lastWin32Error: {lastWin32Error}");
 			}
 
 			if (!UpdateDllHandles()) {
@@ -350,7 +351,11 @@ namespace MedianStats
 
 			//var pAllocAddress = _MemVirtualAllocEx(g_ahD2Handle[1], 0, 0x100, BitOR(MEM_COMMIT, MEM_RESERVE), PAGE_EXECUTE_READWRITE);
 			var pAllocAddress = VirtualAllocEx(g_ahD2Handle, IntPtr.Zero, 0x100, AllocationType.Commit | AllocationType.Reserve, MemoryProtection.ExecuteReadWrite);
-			if (pAllocAddress == IntPtr.Zero) { throw new Exception("UpdateDllHandles: Failed to allocate memory."); }
+			if (pAllocAddress == IntPtr.Zero) {
+				// https://docs.microsoft.com/en-au/windows/win32/debug/system-error-codes
+				var lastWin32Error = Marshal.GetLastWin32Error();
+				throw new Exception("UpdateDllHandles: Failed to allocate memory.");
+			}
 
 			string[] g_asDLL = { "D2Client.dll", "D2Common.dll", "D2Win.dll", "D2Lang.dll" };
 

@@ -12,7 +12,7 @@ namespace MedianStats
 	public class NomadMemory
 	{
 		[Flags]
-		enum ProcessAccessFlags : uint
+		public enum ProcessAccessFlags : uint
 		{
 			All = 0x001F0FFF,
 			Terminate = 0x00000001,
@@ -103,12 +103,101 @@ namespace MedianStats
 			Int32 nSize,
 			out IntPtr lpNumberOfBytesWritten);
 
+		#region BOOL WINAPI OpenProcessToken
+		//      BOOL WINAPI OpenProcessToken(           //http://msdn2.microsoft.com/en-us/library/aa379295.aspx
+		//          HANDLE ProcessHandle,               //[in]  A handle to the process whose access token is opened. The process must have the PROCESS_QUERY_INFORMATION access permission.
+		//          DWORD DesiredAccess,                //[in]  Specifies an access mask that specifies the requested types of access to the access token.
+		//          PHANDLE TokenHandle                 //[out] A pointer to a handle that identifies the newly opened access token when the function returns.
+		//          );
+		[DllImport("advapi32.dll", SetLastError = true)]
+		static extern bool OpenProcessToken(IntPtr ProcessHandle, int DesiredAccess, ref IntPtr TokenHandle);
+		#endregion BOOL WINAPI OpenProcessToken
 
+		#region BOOL WINAPI LookupPrivilegeValue
+		//      BOOL WINAPI LookupPrivilegeValue(       //http://msdn2.microsoft.com/en-us/library/aa379180.aspx
+		//          LPCTSTR lpSystemName,               //[in, optional] A pointer to a null-terminated string that specifies the name of the system on which the privilege name is retrieved. If a null string is specified, the function attempts to find the privilege name on the local system.
+		//          LPCTSTR lpName,                     //[in] A pointer to a null-terminated string that specifies the name of the privilege, as defined in the Winnt.h header file. For example, this parameter could specify the constant, SE_SECURITY_NAME, or its corresponding string, "SeSecurityPrivilege".
+		//          PLUID lpLuid                        [out] A pointer to a variable that receives the LUID by which the privilege is known on the system specified by the lpSystemName parameter.
+		//      );
+		[DllImport("advapi32.dll", SetLastError = true)]
+		static extern bool LookupPrivilegeValue(string lpSystemName, string lpName, ref long lpLuid);
+		#endregion BOOL WINAPI LookupPrivilegeValue
+
+		#region BOOL WINAPI AdjustTokenPrivileges
+		//      BOOL WINAPI AdjustTokenPrivileges(      //http://msdn2.microsoft.com/en-us/library/aa375202.aspx
+		//          HANDLE TokenHandle,                 //[in] A handle to the access token that contains the privileges to be modified. The handle must have TOKEN_ADJUST_PRIVILEGES access to the token. If the PreviousState parameter is not NULL, the handle must also have TOKEN_QUERY access.
+		//          BOOL DisableAllPrivileges,          //[in] Specifies whether the function disables all of the token's privileges. If this value is TRUE, the function disables all privileges and ignores the NewState parameter. If it is FALSE, the function modifies privileges based on the information pointed to by the NewState parameter.
+		//          PTOKEN_PRIVILEGES NewState,         //[in, optional] A pointer to a TOKEN_PRIVILEGES structure that specifies an array of privileges and their attributes. If the DisableAllPrivileges parameter is FALSE, the AdjustTokenPrivileges function enables, disables, or removes these privileges for the token. The following table describes the action taken by the AdjustTokenPrivileges function, based on the privilege attribute. If DisableAllPrivileges is TRUE, the function ignores this parameter.
+		//          DWORD BufferLength,                 //[in] Specifies the size, in bytes, of the buffer pointed to by the PreviousState parameter. This parameter can be zero if the PreviousState parameter is NULL.
+		//          PTOKEN_PRIVILEGES PreviousState,    //[out, optional] A pointer to a buffer that the function fills with a TOKEN_PRIVILEGES structure that contains the previous state of any privileges that the function modifies. That is, if a privilege has been modified by this function, the privilege and its previous state are contained in the TOKEN_PRIVILEGES structure referenced by PreviousState. If the PrivilegeCount member of TOKEN_PRIVILEGES is zero, then no privileges have been changed by this function. This parameter can be NULL. If you specify a buffer that is too small to receive the complete list of modified privileges, the function fails and does not adjust any privileges. In this case, the function sets the variable pointed to by the ReturnLength parameter to the number of bytes required to hold the complete list of modified privileges.
+		//          PDWORD ReturnLength                 //[out, optional] A pointer to a variable that receives the required size, in bytes, of the buffer pointed to by the PreviousState parameter. This parameter can be NULL if PreviousState is NULL.
+		//          );
+		[DllImport("advapi32.dll", SetLastError = true)]
+		static extern bool AdjustTokenPrivileges(IntPtr TokenHandle, bool DisableAllPrivileges, ref TOKEN_PRIVILEGES NewState, int BufferLength, IntPtr PreviousState, IntPtr ReturnLength);
+		#endregion BOOL WINAPI AdjustTokenPrivileges
+
+		//Needed constants
+		public const int TOKEN_ADJUST_PRIVILEGES = 0x00000020;
+		public const int TOKEN_QUERY = 0x00000008;
+		public const int SE_PRIVILEGE_ENABLED = 0x00000002;
+		public const string SE_DEBUG_NAME = "SeDebugPrivilege";
+
+		[StructLayout(LayoutKind.Sequential, Pack = 4)]
+		public struct LUID_AND_ATTRIBUTES
+		{
+			public long Luid;
+			public int Attributes;
+		}
+		[StructLayout(LayoutKind.Sequential, Pack = 4)]
+		public struct TOKEN_PRIVILEGES
+		{
+			public int PrivilegeCount;
+			public LUID_AND_ATTRIBUTES Privileges;
+		}
+
+		/// <summary>
+		/// This is necessary to get the rights to for OpenProcess.
+		/// WARNING: If the program is run from Visual Studio this is not needes since the Process already has that rights
+		/// </summary>
+		public static void EnableSE()
+		{
+			IntPtr hToken = IntPtr.Zero;
+
+			if (!OpenProcessToken(System.Diagnostics.Process.GetCurrentProcess().Handle, TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, ref hToken)) {
+				Debug.WriteLine("OpenProcessToken() failed, error = {0} . SeDebugPrivilege is not available", Marshal.GetLastWin32Error());
+				return;
+			}
+			Debug.WriteLine("OpenProcessToken() successfully");
+
+			long luid = 0;
+			if (!LookupPrivilegeValue(null, SE_DEBUG_NAME, ref luid)) {
+				Debug.WriteLine("LookupPrivilegeValue() failed, error = {0} .SeDebugPrivilege is not available", Marshal.GetLastWin32Error());
+				CloseHandle(hToken);
+				return;
+			}
+			Debug.WriteLine("LookupPrivilegeValue() successfully");
+
+			var tp = new TOKEN_PRIVILEGES {
+				PrivilegeCount = 1,
+				Privileges = new LUID_AND_ATTRIBUTES {
+					Luid = luid,
+					Attributes = SE_PRIVILEGE_ENABLED
+				}
+			};
+
+			if (!AdjustTokenPrivileges(hToken, false, ref tp, 0, IntPtr.Zero, IntPtr.Zero)) {
+				Debug.WriteLine("LookupPrivilegeValue() failed, error = {0} .SeDebugPrivilege is not available", Marshal.GetLastWin32Error());
+			} else {
+				Debug.WriteLine("SeDebugPrivilege is now available");
+			}
+			CloseHandle(hToken);
+		}
 
 		/**
 		 * Description:		Opens a process and enables all possible access rights to the process.  The
 		 *					Process ID of the process is used to specify which process to open.  You must
 		 *					call this function before calling _MemoryClose(), _MemoryRead(), or _MemoryWrite().
+		 *					WARNING: This needs SeDebugPrivilege => use EnableSE()
 		 *					
 		 * Parameter(s):	iv_Pid - The Process ID of the program you want to open.
 		 *					iv_DesiredAccess - (optional) Set to 0x1F0FFF by default, which enables all
@@ -123,13 +212,16 @@ namespace MedianStats
 		 *								 the specified process.
 		 *					On Failure - Returns 0
 		 */
-		public static IntPtr MemoryOpen(int iv_Pid, int iv_DesiredAccess = 0x1F0FFF, bool if_InheritHandle = true)
+		public static IntPtr OpenProcess(int pid, ProcessAccessFlags desiredAccess = ProcessAccessFlags.All, bool inheritHandle = true)
 		{
-			var av_OpenProcess = OpenProcess((ProcessAccessFlags)iv_DesiredAccess, if_InheritHandle, iv_Pid/*, true*/);
-	
-			IntPtr ah_Handle = av_OpenProcess;
-	
-			return ah_Handle;
+			// WARNING: This needs SeDebugPrivilege => use EnableSE()
+			var openProcessHandle = OpenProcess(desiredAccess, inheritHandle, pid);
+			//if (openProcessHandle == IntPtr.Zero) {
+			//	// https://docs.microsoft.com/en-au/windows/win32/debug/system-error-codes
+			//	var lastWin32Error = Marshal.GetLastWin32Error();
+			//}
+
+			return openProcessHandle;
 		}
 
 		/**

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -75,5 +76,16 @@ namespace MedianStats
 		[DllImport("kernel32.dll", SetLastError = true)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool CloseHandle(IntPtr hObject);
+
+		public static bool HasAdminRights()
+		{
+			bool isElevated;
+			using (WindowsIdentity identity = WindowsIdentity.GetCurrent()) {
+				WindowsPrincipal principal = new WindowsPrincipal(identity);
+				isElevated = principal.IsInRole(WindowsBuiltInRole.Administrator);
+			}
+
+			return isElevated;
+		}
 	}
 }
