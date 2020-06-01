@@ -28,6 +28,8 @@ namespace MedianStats
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
 		public static MainWindow mainInstance;
 		public static string ExeDir;
 
@@ -211,15 +213,6 @@ namespace MedianStats
 			}
 		}
 
-		Brush notifierTextBackground
-		{
-			set {
-				if (!CheckAccess()) {
-					Dispatcher.Invoke(() => notifierText.Background = value);
-				}
-			}
-		}
-
 		string ErrorMsg
 		{
 			set {
@@ -332,7 +325,7 @@ namespace MedianStats
 
 			if (!UpdateDllHandles()) {
 				_CloseHandle();
-				Debug.WriteLine("UpdateHandle: Couldn't update dll handles.");
+				logger.Debug("UpdateHandle: Couldn't update dll handles.");
 				//throw new Exception("UpdateHandle: Couldn't update dll handles.");
 			}
 
@@ -393,7 +386,7 @@ namespace MedianStats
 				throw new Exception("UpdateDllHandles: Failed to free memory.");
 			}
 			if (bFailed) {
-				Debug.WriteLine("UpdateDllHandles: Couldn't retrieve dll addresses.");
+				logger.Debug("UpdateDllHandles: Couldn't retrieve dll addresses.");
 				//throw new Exception("UpdateDllHandles: Couldn't retrieve dll addresses.");
 				return false;
 			}

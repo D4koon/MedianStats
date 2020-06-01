@@ -14,6 +14,8 @@ namespace MedianStats
 	/// </summary>
 	public class MouseFix
 	{
+		private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
 		public IntPtr g_hD2Client { get { return mainInstance.g_hD2Client; } }
 		public IntPtr g_ahD2Handle { get { return mainInstance.g_ahD2Handle; } }
 
@@ -22,7 +24,7 @@ namespace MedianStats
 		public void Do()
 		{
 			if (Settings.Default.mousefix != IsMouseFixEnabled()) {
-				Debug.WriteLine("option: " + Settings.Default.mousefix + " enabled? " + IsMouseFixEnabled()  + " => mousefix changed");
+				logger.Debug("option: " + Settings.Default.mousefix + " enabled? " + IsMouseFixEnabled()  + " => mousefix changed");
 				ToggleMouseFix();
 			}
 		}

@@ -95,7 +95,7 @@ namespace MedianStats
 		{
 			var testByte = NomadMemory.MemoryRead(g_hD2Client + 0x3AECF, g_ahD2Handle, new byte[1])[0];
 			var enabled = testByte == 0x90;
-			//Debug.WriteLine("testbyte: " + testByte + " enabled? "+ enabled);
+			//logger.Debug("testbyte: " + testByte + " enabled? "+ enabled);
 			return enabled;
 		}
 	}

@@ -12,7 +12,8 @@ namespace MedianStats.IO
 	[SettingsSerializeAs(SettingsSerializeAs.Xml)]
 	public class Sound
 	{
-		//public int ID;
+		private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
 		public string FilePath { get; set; }
 		public double Volume { get; set; }
 
@@ -34,7 +35,7 @@ namespace MedianStats.IO
 
 		public void Play()
 		{
-			//Debug.WriteLine("Play sound: " + FilePath);
+			//logger.Debug("Play sound: " + FilePath);
 			PlaySound(FilePath, Volume);
 		}
 
@@ -46,7 +47,7 @@ namespace MedianStats.IO
 		public void PlaySound(Uri soundFileUri, double volume)
 		{
 			if (volume > 0) {
-				Debug.WriteLine($"Play sound: '{soundFileUri}' Volume: {volume}");
+				logger.Debug($"Play sound: '{soundFileUri}' Volume: {volume}");
 				mediaPlayer = new MediaPlayer();
 				mediaPlayer.MediaFailed += MediaPlayer_MediaFailed;
 				mediaPlayer.Open(soundFileUri);
@@ -57,7 +58,7 @@ namespace MedianStats.IO
 
 		private static void MediaPlayer_MediaFailed(object sender, ExceptionEventArgs e)
 		{
-			Debug.WriteLine($"Play sound failed");
+			logger.Debug($"Play sound failed");
 		}
 	}
 

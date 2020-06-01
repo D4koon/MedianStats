@@ -11,6 +11,8 @@ namespace MedianStats
 {
 	public class NomadMemory
 	{
+		private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
 		[Flags]
 		public enum ProcessAccessFlags : uint
 		{
@@ -164,18 +166,18 @@ namespace MedianStats
 			IntPtr hToken = IntPtr.Zero;
 
 			if (!OpenProcessToken(System.Diagnostics.Process.GetCurrentProcess().Handle, TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, ref hToken)) {
-				Debug.WriteLine("OpenProcessToken() failed, error = {0} . SeDebugPrivilege is not available", Marshal.GetLastWin32Error());
+				logger.Debug("OpenProcessToken() failed, error = {0} . SeDebugPrivilege is not available", Marshal.GetLastWin32Error());
 				return;
 			}
-			Debug.WriteLine("OpenProcessToken() successfully");
+			logger.Debug("OpenProcessToken() successfully");
 
 			long luid = 0;
 			if (!LookupPrivilegeValue(null, SE_DEBUG_NAME, ref luid)) {
-				Debug.WriteLine("LookupPrivilegeValue() failed, error = {0} .SeDebugPrivilege is not available", Marshal.GetLastWin32Error());
+				logger.Debug("LookupPrivilegeValue() failed, error = {0} .SeDebugPrivilege is not available", Marshal.GetLastWin32Error());
 				CloseHandle(hToken);
 				return;
 			}
-			Debug.WriteLine("LookupPrivilegeValue() successfully");
+			logger.Debug("LookupPrivilegeValue() successfully");
 
 			var tp = new TOKEN_PRIVILEGES {
 				PrivilegeCount = 1,
@@ -186,9 +188,9 @@ namespace MedianStats
 			};
 
 			if (!AdjustTokenPrivileges(hToken, false, ref tp, 0, IntPtr.Zero, IntPtr.Zero)) {
-				Debug.WriteLine("LookupPrivilegeValue() failed, error = {0} .SeDebugPrivilege is not available", Marshal.GetLastWin32Error());
+				logger.Debug("LookupPrivilegeValue() failed, error = {0} .SeDebugPrivilege is not available", Marshal.GetLastWin32Error());
 			} else {
-				Debug.WriteLine("SeDebugPrivilege is now available");
+				logger.Debug("SeDebugPrivilege is now available");
 			}
 			CloseHandle(hToken);
 		}

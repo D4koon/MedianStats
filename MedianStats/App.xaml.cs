@@ -79,7 +79,7 @@ namespace MedianStats
 
 		private void Application_Exit(object sender, ExitEventArgs e)
 		{
-			Debug.WriteLine("=== Shutdown - after this only cleanup should happen and then exit application ===");
+			logger.Debug("=== Shutdown - after this only cleanup should happen and then exit application ===");
 			// == Shutdown NLog ==
 			// According to NLog-docu, it is reccomended to call this method when exiting.
 			NLog.LogManager.Shutdown(); // Flush and close down internal threads and timers

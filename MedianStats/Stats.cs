@@ -11,6 +11,8 @@ namespace MedianStats
 {
 	public class Stats
 	{
+		private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
 		public IntPtr g_hD2Client { get { return mainInstance.g_hD2Client; } }
 		public IntPtr g_ahD2Handle { get { return mainInstance.g_ahD2Handle; } }
 		public IntPtr g_hD2Common { get { return mainInstance.g_hD2Common; } }
@@ -74,7 +76,7 @@ namespace MedianStats
 		public void UpdateStatValueMem(int iVector)
 		{
 			if (iVector !=/*<>*/ 0 && iVector !=/*<>*/ 1) {
-				Debug.WriteLine("UpdateStatValueMem: Invalid iVector value.");
+				logger.Debug("UpdateStatValueMem: Invalid iVector value.");
 			}
 
 			var pUnitAddress = GetUnitToRead();

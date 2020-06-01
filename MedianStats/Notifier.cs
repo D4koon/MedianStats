@@ -18,6 +18,8 @@ namespace MedianStats
 {
 	public class Notifier
 	{
+		private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
 		public static IntPtr g_hD2Client { get { return mainInstance.g_hD2Client; } }
 		public static IntPtr g_ahD2Handle { get { return mainInstance.g_ahD2Handle; } }
 		public static IntPtr g_hD2Common { get { return mainInstance.g_hD2Common; } }
@@ -55,7 +57,7 @@ namespace MedianStats
 				return;
 			}
 
-			//Debug.WriteLine("========= start =========");
+			//logger.Debug("========= start =========");
 
 			for (int i = 0; i < (uint)iPaths; i++) {
 
@@ -67,7 +69,7 @@ namespace MedianStats
 					
 					pUnit = (IntPtr)unitAny.pUnitNext;
 
-					//Debug.WriteLine("unitAny.iUnitType: " + unitAny.iUnitType);
+					//logger.Debug("unitAny.iUnitType: " + unitAny.iUnitType);
 					
 					if (unitAny.IsItem) {
 						var tItemData = ReadProcessMemoryStruct<ItemData>(g_ahD2Handle, (IntPtr)unitAny.pUnitData);
@@ -235,7 +237,7 @@ namespace MedianStats
 					}
 				} catch (Exception) {
 					tempMatchErrorLines.Add(i);
-					Debug.WriteLine($"Warning: NotifierUpdateList() - Could not parse line {i}");
+					logger.Debug($"Warning: NotifierUpdateList() - Could not parse line {i}");
 				}
 			}
 

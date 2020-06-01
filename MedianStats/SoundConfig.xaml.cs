@@ -24,6 +24,8 @@ namespace MedianStats
 	/// </summary>
 	public partial class SoundConfig : UserControl
 	{
+		private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
 		Sound sound;
 
 		public Sound Sound
@@ -73,7 +75,7 @@ namespace MedianStats
 		{
 			// Slider has value from 0...1
 			var volume = ((Slider)sender).Value;
-			Debug.WriteLine(volume);
+			logger.Debug(volume);
 
 			sound.Volume = volume;
 			Settings.Default.notifierSounds[ID].Volume = volume;

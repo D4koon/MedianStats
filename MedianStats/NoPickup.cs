@@ -47,7 +47,7 @@ namespace MedianStats
 		{
 			var testByte = NomadMemory.MemoryRead(g_hD2Client + 0x11C2F0, g_ahD2Handle, new byte[1])[0];
 			var enabled = testByte == 1;
-			//Debug.WriteLine("NoPickup::IsEnabled() " + enabled + " testByte: " + testByte);
+			//logger.Debug("NoPickup::IsEnabled() " + enabled + " testByte: " + testByte);
 			return enabled;
 		}
 	}
