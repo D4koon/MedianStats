@@ -1,7 +1,9 @@
-# MedianStats
-A enhancement-tool for Median XL - A Diablo2 Mod
+<img align="left" width="110" height="110" src="https://raw.githubusercontent.com/D4koon/MedianStats/master/MedianStats/resources/logo.ico" alt="MedianStats icon">
 
-Features
+ # MedianStats
+An enhancement-tool for Median XL - A Diablo2 Mod
+
+### Features
 - Drop-notifier with sounds
   - Sounds can be customized
 - Read the stats of your character and merc
