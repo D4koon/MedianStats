@@ -63,38 +63,40 @@
 						</StackPanel>
 					</TabItem>
 					<TabItem Header="Helper">
-						<Grid>
-							<local:NotifyHelper></local:NotifyHelper>
-						</Grid>
+							<local:NotifyHelper Width="Auto" Height="Auto"/>
 					</TabItem>
 				</TabControl>
 			</TabItem>
 			<TabItem Header="Stats">
 				<Grid>
-					<StackPanel>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="20*"/>
+					</Grid.RowDefinitions>
+					<StackPanel Grid.Row="0">
 						<CheckBox x:Name="readMercenary">Read Mercenary</CheckBox>
 						<Button Click="Button_Click_Read">Read stats</Button>
-						<Grid Height="300">
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="*"/>
-								<ColumnDefinition Width="*"/>
-								<ColumnDefinition Width="*"/>
-							</Grid.ColumnDefinitions>
-
-							<DockPanel Grid.Column="0">
-								<Label DockPanel.Dock="Top">statsListBasic</Label>
-								<ListView x:Name="statsListBasic"/>
-							</DockPanel>
-							<DockPanel Grid.Column="1">
-								<Label DockPanel.Dock="Top">statsListDefens</Label>
-								<ListView x:Name="statsListDefens"/>
-							</DockPanel>
-							<DockPanel Grid.Column="2">
-								<Label DockPanel.Dock="Top">statsListOffens</Label>
-								<ListView x:Name="statsListOffens"/>
-							</DockPanel>
-						</Grid>
 					</StackPanel>
+					<Grid Grid.Row="1">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+
+						<DockPanel Grid.Column="0">
+							<Label DockPanel.Dock="Top">statsListBasic</Label>
+							<ListView x:Name="statsListBasic"/>
+						</DockPanel>
+						<DockPanel Grid.Column="1">
+							<Label DockPanel.Dock="Top">statsListDefens</Label>
+							<ListView x:Name="statsListDefens"/>
+						</DockPanel>
+						<DockPanel Grid.Column="2">
+							<Label DockPanel.Dock="Top">statsListOffens</Label>
+							<ListView x:Name="statsListOffens"/>
+						</DockPanel>
+					</Grid>
 				</Grid>
 			</TabItem>
 			<TabItem Header="Options">

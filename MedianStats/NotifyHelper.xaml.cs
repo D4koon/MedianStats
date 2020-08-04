@@ -27,6 +27,8 @@ namespace MedianStats
 		private void Button_Click(object sender, RoutedEventArgs e)
 		{
 			var matches = MainWindow.mainInstance.notifier.FindItemsFromNotifierString(testString.Text);
+
+			matchesList.Items.Clear();
 			foreach (var item in matches) {
 				matchesList.Items.Add(new ListBoxItem() { Content = item });
 			}

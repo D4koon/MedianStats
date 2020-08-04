@@ -6,10 +6,14 @@
 		xmlns:local="clr-namespace:MedianStats"
 		mc:Ignorable="d"
 		Height="429.508" Width="544.262">
-	<Grid>
-		<StackPanel>
-			<Label>
-				<TextBlock>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0">
+            <Label>
+                <TextBlock>
 				"Item Name" flag1 flag2 ... flagN # Everything after hashtag is a comment.<LineBreak/>
 <LineBreak/>
 Item name is what youre matching against. Its a regex string.<LineBreak/>
@@ -30,11 +34,11 @@ This would notify for ethereal SU Battle Axe, Battle Staff,<LineBreak/>
 Short Battle Bow and Long Battle Bow, and would play Sound 3<LineBreak/>
 <LineBreak/>
 Write something in this box and click "Show Matches" to see what matches!
-				</TextBlock>
-			</Label>
-			<TextBox x:Name="testString"></TextBox>
+                </TextBlock>
+            </Label>
+			<TextBox x:Name="testString"/>
 			<Button Click="Button_Click">Show Matches</Button>
-			<ListBox x:Name="matchesList"></ListBox>
-		</StackPanel>
-	</Grid>
+        </StackPanel>
+		<ListBox x:Name="matchesList"  Grid.Row="1"/>
+    </Grid>
 </UserControl>
