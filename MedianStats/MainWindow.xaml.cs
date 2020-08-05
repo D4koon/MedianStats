@@ -33,6 +33,9 @@ namespace MedianStats
 		public static MainWindow mainInstance;
 		public static string ExeDir;
 
+
+		// TODO: rechten und linken slot tauschen -> mit rechtsklick den linke slot ausführen
+
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -146,6 +149,7 @@ namespace MedianStats
 		ShowItems showItems = new ShowItems();
 		MouseFix mouseFix = new MouseFix();
 		NoPickup noPickup = new NoPickup();
+		ConfigAlwaysRun configAlwaysRun = new ConfigAlwaysRun();
 		public Notifier notifier = new Notifier();
 		public Stats stats = new Stats();
 
@@ -182,6 +186,8 @@ namespace MedianStats
 					showItems.Do();
 
 					noPickup.Do(bIsIngame);
+
+					configAlwaysRun.Do();
 
 					if (Settings.Default.notifyEnabled) {
 						notifier.NotifierMain();
@@ -259,13 +265,6 @@ namespace MedianStats
 					listView.Items.Add(new Label() { Content = text, Padding = new Thickness(0), FontFamily = new FontFamily("Consolas") });
 				}
 			}
-		}
-
-		private void Mousefix_Changed(object sender, RoutedEventArgs e)
-		{
-			bool value = ((CheckBox)sender).IsChecked.Value;
-			Settings.Default.mousefix = value;
-			Settings.Default.Save();
 		}
 
 		public bool IsIngame()
@@ -538,9 +537,15 @@ namespace MedianStats
 		//	}
 		//}
 
-		private void Nopickup_Changed(object sender, RoutedEventArgs e)
+		private void NotifyEnabled_Changed(object sender, RoutedEventArgs e)
 		{
-			Settings.Default.nopickup = ((CheckBox)sender).IsChecked.Value;
+			Settings.Default.notifyEnabled = ((CheckBox)sender).IsChecked.Value;
+			Settings.Default.Save();
+		}
+
+		private void NotifySuperior_Changed(object sender, RoutedEventArgs e)
+		{
+			Settings.Default.notifySuperior = ((CheckBox)sender).IsChecked.Value;
 			Settings.Default.Save();
 		}
 
@@ -554,15 +559,22 @@ namespace MedianStats
 			showItems.ToggleShowItems();
 		}
 
-		private void NotifyEnabled_Changed(object sender, RoutedEventArgs e)
+		private void Mousefix_Changed(object sender, RoutedEventArgs e)
 		{
-			Settings.Default.notifyEnabled = ((CheckBox)sender).IsChecked.Value;
+			bool value = ((CheckBox)sender).IsChecked.Value;
+			Settings.Default.mousefix = value;
 			Settings.Default.Save();
 		}
 
-		private void NotifySuperior_Changed(object sender, RoutedEventArgs e)
+		private void Nopickup_Changed(object sender, RoutedEventArgs e)
 		{
-			Settings.Default.notifySuperior = ((CheckBox)sender).IsChecked.Value;
+			Settings.Default.nopickup = ((CheckBox)sender).IsChecked.Value;
+			Settings.Default.Save();
+		}
+
+		private void AlwaysRun_Changed(object sender, RoutedEventArgs e)
+		{
+			Settings.Default.alwaysRun = ((CheckBox)sender).IsChecked.Value;
 			Settings.Default.Save();
 		}
 

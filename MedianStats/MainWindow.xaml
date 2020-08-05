@@ -82,6 +82,7 @@
 						<CheckBox x:Name="toggle" Checked="Toggle_Changed" Unchecked="Toggle_Changed">Switch Show Items between hold/toggle mode</CheckBox>
 						<CheckBox x:Name="mousefix" Checked="Mousefix_Changed" Unchecked="Mousefix_Changed">Continue attacking when monster dies under cursor</CheckBox>
 						<CheckBox x:Name="nopickup" Checked="Nopickup_Changed" Unchecked="Nopickup_Changed">Always activate /nopickup</CheckBox>
+						<CheckBox x:Name="alwaysRun" Checked="AlwaysRun_Changed" Unchecked="AlwaysRun_Changed">Always run</CheckBox>
 					</StackPanel>
 				</Grid>
 			</TabItem>

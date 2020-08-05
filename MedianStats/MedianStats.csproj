@@ -69,6 +69,7 @@
     <Compile Include="IO\Sound.cs" />
     <Compile Include="MVVM\CommandHandler.cs" />
     <Compile Include="RichTextBoxHelper.cs" />
+    <Compile Include="ConfigAlwaysRun.cs" />
     <Compile Include="SoundConfig.xaml.cs">
       <DependentUpon>SoundConfig.xaml</DependentUpon>
     </Compile>
@@ -82,7 +83,7 @@
       <DependentUpon>NotifyHelper.xaml</DependentUpon>
     </Compile>
     <Compile Include="Stats.cs" />
-    <Compile Include="ToggleShowItems.cs" />
+    <Compile Include="ShowItems.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

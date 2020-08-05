@@ -8,13 +8,6 @@
     <Setting Name="mousefix" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="notifierSounds" Type="MedianStats.IO.SoundList" Scope="User">
-      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
-&lt;Sound xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
-  &lt;FilePath&gt;resources/sound1.wav&lt;/FilePath&gt;
-  &lt;Volume&gt;0.15&lt;/Volume&gt;
-&lt;/Sound&gt;</Value>
-    </Setting>
     <Setting Name="nopickup" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
@@ -26,6 +19,36 @@
     </Setting>
     <Setting Name="notifySuperior" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="alwaysRun" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="notifierSounds" Type="MedianStats.IO.SoundList" Scope="User">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;SoundList xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;Sounds&gt;
+    &lt;Sound&gt;
+      &lt;FilePath&gt;resources/sound1.wav&lt;/FilePath&gt;
+      &lt;Volume&gt;0.15&lt;/Volume&gt;
+    &lt;/Sound&gt;
+    &lt;Sound&gt;
+      &lt;FilePath&gt;resources/sound2.wav&lt;/FilePath&gt;
+      &lt;Volume&gt;0.15&lt;/Volume&gt;
+    &lt;/Sound&gt;
+    &lt;Sound&gt;
+      &lt;FilePath&gt;resources/sound3.wav&lt;/FilePath&gt;
+      &lt;Volume&gt;0.15&lt;/Volume&gt;
+    &lt;/Sound&gt;
+    &lt;Sound&gt;
+      &lt;FilePath&gt;resources/sound4.wav&lt;/FilePath&gt;
+      &lt;Volume&gt;0.15&lt;/Volume&gt;
+    &lt;/Sound&gt;
+    &lt;Sound&gt;
+      &lt;FilePath&gt;resources/sound5.wav&lt;/FilePath&gt;
+      &lt;Volume&gt;0.15&lt;/Volume&gt;
+    &lt;/Sound&gt;
+  &lt;/Sounds&gt;
+&lt;/SoundList&gt;</Value>
     </Setting>
   </Settings>
 </SettingsFile>

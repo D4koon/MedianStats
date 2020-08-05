@@ -49,20 +49,6 @@ namespace MedianStats.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<Sound xmlns:xsi=\"http://www.w3.org/2001" +
-            "/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n  <FilePath>" +
-            "resources/sound1.wav</FilePath>\r\n  <Volume>0.15</Volume>\r\n</Sound>")]
-        public global::MedianStats.IO.SoundList notifierSounds {
-            get {
-                return ((global::MedianStats.IO.SoundList)(this["notifierSounds"]));
-            }
-            set {
-                this["notifierSounds"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool nopickup {
             get {
@@ -106,6 +92,54 @@ namespace MedianStats.Properties {
             }
             set {
                 this["notifySuperior"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool alwaysRun {
+            get {
+                return ((bool)(this["alwaysRun"]));
+            }
+            set {
+                this["alwaysRun"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<SoundList xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <Sounds>
+    <Sound>
+      <FilePath>resources/sound1.wav</FilePath>
+      <Volume>0.15</Volume>
+    </Sound>
+    <Sound>
+      <FilePath>resources/sound2.wav</FilePath>
+      <Volume>0.15</Volume>
+    </Sound>
+    <Sound>
+      <FilePath>resources/sound3.wav</FilePath>
+      <Volume>0.15</Volume>
+    </Sound>
+    <Sound>
+      <FilePath>resources/sound4.wav</FilePath>
+      <Volume>0.15</Volume>
+    </Sound>
+    <Sound>
+      <FilePath>resources/sound5.wav</FilePath>
+      <Volume>0.15</Volume>
+    </Sound>
+  </Sounds>
+</SoundList>")]
+        public global::MedianStats.IO.SoundList notifierSounds {
+            get {
+                return ((global::MedianStats.IO.SoundList)(this["notifierSounds"]));
+            }
+            set {
+                this["notifierSounds"] = value;
             }
         }
     }
