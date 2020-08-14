@@ -6,11 +6,13 @@ An enhancement-tool for Median XL - A Diablo2 Mod
 ### Features
 - Drop-notifier with sounds
   - Sounds can be customized
+  - Autocomplete for items (ctrl-j or with rightclick menue)
 - Read the stats of your character and merc
 - Optional: toggle-mode for items on the floor.
   - This means items are always shown or never shown
 - Optional: continue attacking when monster dies under cursor
 - Optional: Always activate /nopickup
+- Optional: Always run
 
 ![MedianStats AppPreview](/MedianStats/resources/AppPreview.png)
 
