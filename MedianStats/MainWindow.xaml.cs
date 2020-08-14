@@ -20,6 +20,7 @@ using static MedianStats.NomadMemory;
 using static MedianStats.WinApi;
 using static MedianStats.Util;
 using MedianStats.Properties;
+using System.Collections.ObjectModel;
 
 namespace MedianStats
 {
@@ -65,6 +66,10 @@ namespace MedianStats
 				notifier.NeedUpdateList = true;
 			};
 
+			var test = new ObservableCollection<string>();
+			test.Add("Uninitialized");
+			rtbIntellisense.ItemsSource = test;
+
 			// This is necessary to get the rights to for OpenProcess.
 			// WARNING: If the program is run from Visual Studio this is not needes since the Process already has that rights
 			NomadMemory.EnableSE();
@@ -72,6 +77,24 @@ namespace MedianStats
 			Task.Run(() => Main());
 
 			this.Show();
+		}
+
+		public void InitItemAutocomplete(List<Notifier.CacheItem> cacheItems)
+		{
+			var itemList = new ObservableCollection<string>();
+			foreach (var item in cacheItems) {
+				var tempItemName = item.Name;
+				tempItemName = tempItemName.Replace(" (1)", "");
+				tempItemName = tempItemName.Replace(" (2)", "");
+				tempItemName = tempItemName.Replace(" (3)", "");
+				tempItemName = tempItemName.Replace(" (4)", "");
+
+				if (itemList.Contains(tempItemName) == false) {
+					itemList.Add(tempItemName);
+				}
+				
+			}
+			Dispatcher.Invoke(() => rtbIntellisense.ItemsSource = itemList);
 		}
 
 		private void InitVolumeSliders()
@@ -162,9 +185,17 @@ namespace MedianStats
 			bool bIsIngame = false;
 			
 			while (true) {
-				
+
+				var hWnd = AutoItApi.WinGetHandle("Diablo II");
+				if (hWnd == (IntPtr)0) {
+					Thread.Sleep(500);
+					ErrorMsg = "UpdateHandle: Couldn't find Diablo II window";
+					continue;
+				}
+
 				try {
-					UpdateHandle();
+					
+					UpdateHandle(hWnd);
 					ErrorMsg = "";
 				} catch (Exception ex) {
 					ErrorMsg = ex.Message;
@@ -190,7 +221,7 @@ namespace MedianStats
 					configAlwaysRun.Do();
 
 					if (Settings.Default.notifyEnabled) {
-						notifier.NotifierMain();
+						notifier.Do();
 						
 						// The following implementation is not pretty but it should work good enough for now
 						NotifierLinesClearError();
@@ -300,11 +331,8 @@ namespace MedianStats
 			}
 		}
 
-		public void UpdateHandle() {
-			var hWnd = AutoItApi.WinGetHandle("Diablo II");
-			if (hWnd == (IntPtr)0) {
-				throw new Exception("UpdateHandle: Couldn't find Diablo II window");
-			}
+		public void UpdateHandle(IntPtr hWnd) {
+			
 			var iPID = AutoItApi.WinGetProcess(hWnd);
 
 			//if (iPID == -1) { return _CloseHandle(); }

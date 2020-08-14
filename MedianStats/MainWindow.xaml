@@ -4,6 +4,8 @@
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:MedianStats"
+		xmlns:beh="clr-namespace:Behaviorlibrary;assembly=Behaviorlibrary"
+		xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
 		mc:Ignorable="d"
 		Title="MedianStats" Height="500" Width="800" Closing="Window_Closing" Icon="resources/logo.ico">
 	<Grid>
@@ -22,6 +24,27 @@
 									<Setter Property="Margin" Value="0"/>
 								</Style>
 							</RichTextBox.Resources>
+							<RichTextBox.ContextMenu>
+								<ContextMenu x:Name="contextMenu">
+									<MenuItem Command="ApplicationCommands.Undo"
+									  Header="Undo"/>
+													<MenuItem Command="ApplicationCommands.Redo"
+									  Header="Redo"/>
+													<Separator />
+													<MenuItem Command="ApplicationCommands.Cut"
+									  Header="Cut"/>
+													<MenuItem Command="ApplicationCommands.Copy"
+									  Header="Copy"/>
+													<MenuItem Command="ApplicationCommands.Paste"
+									  Header="Paste"/>
+								</ContextMenu>
+							</RichTextBox.ContextMenu>
+							<i:Interaction.Behaviors>
+								<beh:MyIntellisenseBehavior x:Name="rtbIntellisense"
+									 KeysOpened="{beh:KeysFromChar '[,OemPipe}'}"
+									 KeysClosed="{beh:KeysFromChar ]\,OemBackslash\,Escape}"
+									 KeysReturned="{beh:KeysFromChar Tab Return}" />
+							</i:Interaction.Behaviors>
 							<!-- Set PageWidth so no text-wrapping happens see: https://stackoverflow.com/questions/1368047/c-wpf-disable-text-wrap-of-richtextbox/1369184#1369184 -->
 							<FlowDocument PageWidth="100000">
 								<Paragraph>

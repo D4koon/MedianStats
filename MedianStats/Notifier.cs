@@ -42,7 +42,7 @@ namespace MedianStats
 		{
 		}
 
-		public void NotifierMain()
+		public void Do()
 		{
 			InitItemCache();
 			UpdateMatchList();
@@ -199,6 +199,8 @@ namespace MedianStats
 				};
 				ItemCache.Add(cacheItem);
 			}
+
+			MainWindow.mainInstance.InitItemAutocomplete(ItemCache);
 
 			return true;
 		}
