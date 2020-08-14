@@ -16,6 +16,10 @@ An enhancement-tool for Median XL - A Diablo2 Mod
 
 ![MedianStats AppPreview](/MedianStats/resources/AppPreview.png)
 
+Feature autocomplete in action (ctrl-j or with rightclick menue)
+
+![MedianStats AppPreview](/MedianStats/resources/autocomplete_feature.gif)
+
 ---
 
 </hl>
