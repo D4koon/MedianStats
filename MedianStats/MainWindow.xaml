@@ -84,15 +84,15 @@
 						</Grid.ColumnDefinitions>
 
 						<DockPanel Grid.Column="0">
-							<Label DockPanel.Dock="Top">statsListBasic</Label>
+							<Label DockPanel.Dock="Top" HorizontalAlignment="Center">Basic Stats</Label>
 							<ListView x:Name="statsListBasic"/>
 						</DockPanel>
 						<DockPanel Grid.Column="1">
-							<Label DockPanel.Dock="Top">statsListDefens</Label>
+							<Label DockPanel.Dock="Top" HorizontalAlignment="Center">Defensive stats</Label>
 							<ListView x:Name="statsListDefens"/>
 						</DockPanel>
 						<DockPanel Grid.Column="2">
-							<Label DockPanel.Dock="Top">statsListOffens</Label>
+							<Label DockPanel.Dock="Top" HorizontalAlignment="Center">Offensive stats</Label>
 							<ListView x:Name="statsListOffens"/>
 						</DockPanel>
 					</Grid>
