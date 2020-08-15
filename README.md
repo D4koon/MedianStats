@@ -14,7 +14,7 @@ An enhancement-tool for Median XL - A Diablo2 Mod
 - Optional: Always activate /nopickup
 - Optional: Always run
 
-![MedianStats AppPreview](/MedianStats/resources/AppPreview.png)
+![MedianStats AppPreview](/MedianStats/resources/app_preview.gif)
 
 Feature autocomplete in action (ctrl-j or with rightclick menue)<br>
 <b>NOTE: Works only ingame!</b><br>
