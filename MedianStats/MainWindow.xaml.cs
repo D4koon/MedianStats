@@ -66,9 +66,8 @@ namespace MedianStats
 				notifier.NeedUpdateList = true;
 			};
 
-			var test = new ObservableCollection<string>();
-			test.Add("Uninitialized");
-			rtbIntellisense.ItemsSource = test;
+			var itemList = new ObservableCollection<string>(new List<string> { "Uninitialized" });
+			rtbIntellisense.ItemsSource = itemList;
 
 			// This is necessary to get the rights to for OpenProcess.
 			// WARNING: If the program is run from Visual Studio this is not needes since the Process already has that rights
@@ -132,12 +131,6 @@ namespace MedianStats
 
 		const int g_iGUIOptionsHotkey = 6;
 
-		const int g_iColorRed	= 0xFF0000;
-		const int g_iColorBlue	= 0x0066CC;
-		const int g_iColorGold	= 0x808000;
-		const int g_iColorGreen	= 0x008000;
-		const int g_iColorPink	= 0xFF00FF;
-
 		static readonly string notifierTextDefault = ByteArrayToString(HexStringToByteArray("0x3120322033203420756E69717565202020202020202020202020202020232054696572656420756E69717565730D0A73616372656420756E6971756520202020202020202020202020202020232053616372656420756E69717565730D0A2252696E67247C416D756C6574247C4A6577656C2220756E69717565202320556E69717565206A6577656C72790D0A225175697665722220756E697175650D0A7365740D0A2242656C6C61646F6E6E61220D0A22536872696E65205C28313022202020202020202020202020202020202320536872696E65730D0A23225175697665722220726172650D0A232252696E67247C416D756C6574222072617265202020202020202020202320526172652072696E677320616E6420616D756C6574730D0A2373616372656420657468207375706572696F7220726172650D0A0D0A225369676E6574206F66204C6561726E696E67220D0A2247726561746572205369676E6574220D0A22456D626C656D220D0A2254726F706879220D0A224379636C65220D0A22456E6368616E74696E67220D0A2257696E6773220D0A2252756E6573746F6E657C457373656E63652422202320546567616E7A652072756E65730D0A2247726561742052756E6522202020202020202020232047726561742072756E65730D0A224F72625C7C2220202020202020202020202020202320554D4F730D0A224F696C206F6620436F6E6A75726174696F6E220D0A232252696E67206F66207468652046697665220D0A0D0A232048696465206974656D730D0A686964652031203220332034206C6F77206E6F726D616C207375706572696F72206D6167696320726172650D0A6869646520225E2852696E677C416D756C6574292422206D616769630D0A68696465202251756976657222206E6F726D616C206D616769630D0A6869646520225E28416D6574687973747C546F70617A7C53617070686972657C456D6572616C647C527562797C4469616D6F6E647C536B756C6C7C4F6E79787C426C6F6F6473746F6E657C54757271756F6973657C416D6265727C5261696E626F772053746F6E652924220D0A6869646520225E466C61776C657373220D0A73686F77202228477265617465727C537570657229204865616C696E6720506F74696F6E220D0A686964652022284865616C696E677C4D616E612920506F74696F6E220D0A6869646520225E4B657924220D0A6869646520225E28456C7C456C647C5469727C4E65667C4574687C4974687C54616C7C52616C7C4F72747C5468756C7C416D6E7C536F6C7C536861656C7C446F6C7C48656C7C496F7C4C756D7C4B6F7C46616C7C4C656D7C50756C7C556D7C4D616C7C4973747C47756C7C5665787C4F686D7C4C6F7C5375727C4265727C4A61687C4368616D7C5A6F64292052756E652422"));
 		
 		bool g_bHotkeysEnabled = false;
@@ -182,19 +175,21 @@ namespace MedianStats
 
 			//var hTimerUpdateDelay = AutoItApi.TimerInit();
 
+			int timer = 0;
+
 			bool bIsIngame = false;
 			
 			while (true) {
+				timer++;
 
 				var hWnd = AutoItApi.WinGetHandle("Diablo II");
 				if (hWnd == (IntPtr)0) {
 					Thread.Sleep(500);
-					ErrorMsg = "UpdateHandle: Couldn't find Diablo II window";
+					ErrorMsg = "Couldn't find Diablo II window";
 					continue;
 				}
 
 				try {
-					
 					UpdateHandle(hWnd);
 					ErrorMsg = "";
 				} catch (Exception ex) {
@@ -206,20 +201,21 @@ namespace MedianStats
 					if (!bIsIngame) {
 						// Reset the notify-cache
 						Notifier.ItemCache = null;
-
-						//AutoItApi.GUICtrlSetState(g_idnotifyTest, GUI_ENABLE);
 					}
 
 					InjectFunctions();
 
 					mouseFix.Do();
-
 					showItems.Do();
-
 					noPickup.Do(bIsIngame);
-
 					configAlwaysRun.Do();
 
+					if (timer % 5 == 0) {
+						// Throttle update. This is only a workaround to get the load on the cpu from ~3% to ~1%
+						// Maybe implemente a proper wpf-implementation for the stats to fix that completle
+						UpdateStats();
+					}
+					
 					if (Settings.Default.notifyEnabled) {
 						notifier.Do();
 						
@@ -259,43 +255,62 @@ namespace MedianStats
 			}
 		}
 
-		private void Button_Click_Read(object sender, RoutedEventArgs e)
+		public bool ReadMercenary { get { return Dispatcher.Invoke(() => { return readMercenary.IsChecked.Value; }); } }
+
+
+		List<StatsGroup> statsGroups = null;
+
+		private void UpdateStats()
 		{
+			if (statsGroups == null) {
+				statsGroups = CreateStatsGroups();
+			}
+			
 			stats.UpdateStatValues();
-			CreateGUI();
 
-			statsListBasic.Items.Clear();
-			statsListDefens.Items.Clear();
-			statsListOffens.Items.Clear();
+			UpdateStatsUI();
+		}
 
-			foreach (var guiGroup in guiGroups) {
-				ListView listView;
+		private void UpdateStatsUI()
+		{
+			if (!CheckAccess()) {
+				Dispatcher.Invoke(() => UpdateStatsUI());
+				return;
+			}
+
+			var statsListBasicNew = new ObservableCollection<Label>();
+			var statsListDefensNew = new ObservableCollection<Label>();
+			var statsListOffensNew = new ObservableCollection<Label>();
+
+			foreach (var guiGroup in statsGroups) {
+				ObservableCollection<Label> listView;
 				switch (guiGroup.StatGroup) {
-					case StatGroup.Basic:
-						listView = statsListBasic;
+					case StatGroups.Basic:
+						listView = statsListBasicNew;
 						break;
-					case StatGroup.Defense:
-						listView = statsListDefens;
+					case StatGroups.Defense:
+						listView = statsListDefensNew;
 						break;
-					case StatGroup.Offense:
-						listView = statsListOffens;
+					case StatGroups.Offense:
+						listView = statsListOffensNew;
 						break;
 					default:
 						throw new Exception("Button_Click_Read() - Unknown StatGroup \"" + guiGroup.StatGroup + "\"");
 				}
 
-				listView.Items.Add(new Label() { Content = "=== " + guiGroup.ShortDescription + " ===", Padding = new Thickness(0) });
+				listView.Add(new Label() { Content = "=== " + guiGroup.ShortDescription + " ===", Padding = new Thickness(0), FontWeight = FontWeights.Bold });
 
 				foreach (var statItem in guiGroup.guiItems) {
-					string text = statItem.Update();
-					if (statItem.Description.Length > 0) {
-						text += " | " + statItem.Description;
-					}
+					string text = statItem.GetText();
+					var color = statItem.GetColor();
 
-
-					listView.Items.Add(new Label() { Content = text, Padding = new Thickness(0), FontFamily = new FontFamily("Consolas") });
+					listView.Add(new Label() { Content = text, Padding = new Thickness(0), FontFamily = new FontFamily("Consolas"), Foreground = color });
 				}
+
 			}
+			statsListBasic.ItemsSource = statsListBasicNew;
+			statsListDefens.ItemsSource = statsListDefensNew;
+			statsListOffens.ItemsSource = statsListOffensNew;
 		}
 
 		public bool IsIngame()
@@ -676,206 +691,231 @@ namespace MedianStats
 
 		//#Region GUI
 
-		public void CreateGUI() {
+		private List<StatsGroup> CreateStatsGroups()
+		{
+			var brushConverter = new BrushConverter();
+			Brush lightningBrush = (Brush)brushConverter.ConvertFromString("#FFCEBD00");
 
-			//	var sTitle = !/*not*/ @Compiled ? "Test" : StringFormat("D2Stats %s - [%s]", FileGetVersion(@AutoItExe, "FileVersion"), FileGetVersion(@AutoItExe, "Comments"));
+			var g1 = new StatsGroup("Base stats", StatGroups.Basic);
+			g1.AddStat(" Strength Base: {000} Bonus: {359}%/{900}");
+			g1.AddStat("Dexterity Base: {002} Bonus: {360}%/{901}");
+			g1.AddStat(" Vitality Base: {003} Bonus: {362}%/{902}");
+			g1.AddStat("   Energy Base: {001} Bonus: {361}%/{903}");
 
-			var g1 = new GuiGroup("Base stats", StatGroup.Basic);
-			g1._GUI_NewItem(01, " Strength Base: {000} Bonus: {359}%/{900}");
-			g1._GUI_NewItem(02, "Dexterity Base: {002} Bonus: {360}%/{901}");
-			g1._GUI_NewItem(03, " Vitality Base: {003} Bonus: {362}%/{902}");
-			g1._GUI_NewItem(04, "   Energy Base: {001} Bonus: {361}%/{903}");
-
-			var g2 = new GuiGroup("Other stats", StatGroup.Basic);
-			g2._GUI_NewItem(00, "{076}% Life", "Maximum Life");
-			g2._GUI_NewItem(01, "{077}% Mana", "Maximum Mana");
+			var g2 = new StatsGroup("Other stats", StatGroups.Basic);
+			g2.AddStat("{076}% Maximum Life");
+			g2.AddStat("{077}% Maximum Mana");
 			
-			g2._GUI_NewItem(06, "{080}% M.Find", "Magic Find");
-			g2._GUI_NewItem(07, "{079}% G.Find", "Gold Find");
-			g2._GUI_NewItem(08, "{085}% Exp.Gain", "Experience gained");
-			g2._GUI_NewItem(09, "{479} M.Skill", "Maximum Skill Level");
-			g2._GUI_NewItem(10, "{185} Sig.Stat [185:400/400]", "Signets of Learning. Up to 400 can be used||Any sacred unique item x1-25 + Catalyst of Learning ? Signet of Learning x1-25 + Catalyst of Learning|Any set item x1-25 + Catalyst of Learning ? Signet of Learning x1-25 + Catalyst of Learning|Unique ring/amulet/jewel/quiver + Catalyst of Learning ? Signet of Learning + Catalyst of Learning");
-			g2._GUI_NewItem(11, "Veteran tokens [219:1/1]", "On Nightmare and Hell difficulty, you can find veteran monsters near the end of|each Act. There are five types of veteran monsters, one for each Act||[Class Charm] + each of the 5 tokens ? returns [Class Charm] with added bonuses| +1 to [Your class] Skill Levels| +20% to Experience Gained");
+			g2.AddStat("{080}% Magic Find");
+			g2.AddStat("{079}% Gold Find");
+			g2.AddStat("{085}% Experience gained");
+			g2.AddStat("{479} Maximum Skill Level");
+			g2.AddStat("{185} Signets of Learning", "Up to 400 can be used || See cube recipes in Median-docu for details", new int[] { 185, 400, 400 });
+			//g2.AddItem("Veteran tokens", "On Nightmare and Hell difficulty, you can find veteran monsters near the end of|each Act. There are five types of veteran monsters, one for each Act||[Class Charm] + each of the 5 tokens ? returns [Class Charm] with added bonuses| +1 to [Your class] Skill Levels| +20% to Experience Gained", new int[] { 219, 1, 1});
 
-			g2._GUI_NewItem(10, "{096}%/{067}% Faster Run/Walk", "Faster Run/Walk");
+			g2.AddStat("{096}%/{067}% Faster Run/Walk", "Faster Run/Walk");
 
-			g2._GUI_NewItem(00, "{278} SF", "Strength Factor");
-			g2._GUI_NewItem(01, "{485} EF", "Energy Factor");
-			g2._GUI_NewItem(02, "{904}% F.Cap", "Factor cap. 100% means you don't benefit from more str/ene factor");
+			g2.AddStat("{278} Strength Factor (SF)");
+			g2.AddStat("{485} Energy Factor (EF)");
+			g2.AddStat("{904}% Factor cap.", "100% means you don't benefit from more str/ene factor");
 
-			g2._GUI_NewItem(03, "{409}% Buff.Dur", "Buff/Debuff/Cold Skill Duration");
-			g2._GUI_NewItem(04, "{27}% Mana.Reg", "Mana Regeneration");
+			g2.AddStat("{409}% Buff/Debuff/Cold Skill Duration");
+			g2.AddStat("{27}% Mana Regeneration");
 
-			var g3 = new GuiGroup("Minions", StatGroup.Basic);
-			g3._GUI_NewItem(01, "{444}% Life");
-			g3._GUI_NewItem(02, "{470}% Damage");
-			g3._GUI_NewItem(03, "{487}% Resist");
-			g3._GUI_NewItem(04, "{500}% AR", "Attack Rating");
+			var g3 = new StatsGroup("Minions", StatGroups.Basic);
+			g3.AddStat("{444}% Life");
+			g3.AddStat("{470}% Damage");
+			g3.AddStat("{487}% Resist");
+			g3.AddStat("{500}% Attack Rating (AR)");
 
-			var g4 = new GuiGroup("Life/Mana", StatGroup.Basic);
-			g4._GUI_NewItem(07, "{060}%/{062}% Leech", "Life/Mana Stolen per Hit");
-			g4._GUI_NewItem(08, "{086}/{138} *aeK", "Life/Mana after each Kill");
-			g4._GUI_NewItem(09, "{208}/{209} *oS", "Life/Mana on Striking");
-			g4._GUI_NewItem(10, "{210}/{295} *oA", "Life/Mana on Attack");
+			var g4 = new StatsGroup("Life / Mana", StatGroups.Basic);
+			g4.AddStat("{060}%/{062}% Life/Mana Stolen per Hit");
+			g4.AddStat("{086}/{138} Life/Mana after each Kill (*aeK)");
+			g4.AddStat("{208}/{209} Life/Mana on Striking (*oS)");
+			g4.AddStat("{210}/{295} Life/Mana on Attack (*oA)");
 
-			var g5 = new GuiGroup("Other", StatGroup.Basic);
-			g5._GUI_NewItem(06, "RIP [108:1/1]", "Slain Monsters Rest In Peace");
+			var g5 = new StatsGroup("Other", StatGroups.Basic);
+			g5.AddStat("RIP", "Slain Monsters Rest In Peace", new int[] { 108, 1, 1 });
 
-			var g6 = new GuiGroup("Resistance", StatGroup.Defense);
-			g6._GUI_NewItem(01, "{039}%", "Fire", g_iColorRed);
-			g6._GUI_NewItem(02, "{043}%", "Cold", g_iColorBlue);
-			g6._GUI_NewItem(03, "{041}%", "Lightning", g_iColorGold);
-			g6._GUI_NewItem(04, "{045}%", "Poison", g_iColorGreen);
-			g6._GUI_NewItem(05, "{037}%", "Magic", g_iColorPink);
-			g6._GUI_NewItem(06, "{036}%", "Physical");
+			var g6 = new StatsGroup("Resistance", StatGroups.Defense);
+			g6.AddStat("{039}% Fire", "", Brushes.Red);
+			g6.AddStat("{043}% Cold", "", Brushes.Blue);
+			g6.AddStat("{041}% Lightning", "", lightningBrush);
+			g6.AddStat("{045}% Poison", "", Brushes.Green);
+			g6.AddStat("{037}% Magic", "", Brushes.Orange);
+			g6.AddStat("{036}% Physical", "");
 
-			g6._GUI_NewItem(03, "{171}% TCD", "Total Character Defense");
-			g6._GUI_NewItem(06, "{035} MDR", "Magic Damage Reduction");
-			g6._GUI_NewItem(05, "{034} PDR", "Physical Damage Reduction");
-			g6._GUI_NewItem(07, "{338}% Dodge", "Chance to avoid melee attacks while standing still");
-			g6._GUI_NewItem(08, "{339}% Avoid", "Chance to avoid projectiles while standing still");
-			g6._GUI_NewItem(09, "{340}% Evade", "Chance to avoid any attack while moving");
+			g6.AddStat("{171}% Total Character Defense (TCD)");
+			g6.AddStat("{035} Magic Damage Reduction (MDR)");
+			g6.AddStat("{034} Physical Damage Reduction (PDR)");
+			g6.AddStat("{338}% Dodge", "Chance to avoid melee attacks while standing still");
+			g6.AddStat("{339}% Avoid", "Chance to avoid projectiles while standing still");
+			g6.AddStat("{340}% Evade", "Chance to avoid any attack while moving");
 
-			g6._GUI_NewItem(05, "{109}% CLR", "Curse Length Reduction");
-			g6._GUI_NewItem(06, "{110}% PLR", "Poison Length Reduction");
+			g6.AddStat("{109}% Curse Length Reduction (CLR)");
+			g6.AddStat("{110}% Poison Length Reduction (PLR)");
 
-			var g7 = new GuiGroup("Item/Skill", StatGroup.Defense, "Speed from items and skills behave differently. Use SpeedCalc to find your breakpoints");
-			g7._GUI_NewItem(08, "{099}%/{069}% FHR", "Faster Hit Recovery");
-			g7._GUI_NewItem(09, "{102}%/{069}% FBR", "Faster Block Rate");
+			var g7 = new StatsGroup("Item / Skill", StatGroups.Defense, "Speed from items and skills behave differently. Use SpeedCalc to find your breakpoints");
+			g7.AddStat("{099}%/{069}% Faster Hit Recovery (FHR)");
+			g7.AddStat("{102}%/{069}% Faster Block Rate (FBR)");
 
-			var g8 = new GuiGroup("Slow", StatGroup.Defense);
-			g8._GUI_NewItem(10, "{150}%/{376}% Tgt.", "Slows Target / Slows Melee Target");
-			g8._GUI_NewItem(11, "{363}%/{493}% Att.", "Slows Attacker / Slows Ranged Attacker");
+			var g8 = new StatsGroup("Slow", StatGroups.Defense);
+			g8.AddStat("{150}%/{376}% Slows Target / Slows Melee Target");
+			g8.AddStat("{363}%/{493}% Slows Attacker / Slows Ranged Attacker");
 
-			var g9 = new GuiGroup("Abs/Flat", StatGroup.Defense, "Absorb / Flat absorb");
-			g9._GUI_NewItem(01, "{142}%/{143}", "Fire", g_iColorRed);
-			g9._GUI_NewItem(02, "{148}%/{149}", "Cold", g_iColorBlue);
-			g9._GUI_NewItem(03, "{144}%/{145}", "Lightning", g_iColorGold);
-			g9._GUI_NewItem(04, "{146}%/{147}", "Magic", g_iColorPink);
+			var g9 = new StatsGroup("Absorb / Flat absorb", StatGroups.Defense, "Absorb / Flat absorb");
+			g9.AddStat("{142}%/{143} Fire", "", Brushes.Red);
+			g9.AddStat("{148}%/{149} Cold", "", Brushes.Blue);
+			g9.AddStat("{144}%/{145} Lightning", "", lightningBrush);
+			g9.AddStat("{146}%/{147} Magic", "", Brushes.Orange);
 
-			var g10 = new GuiGroup("Item/Skill", StatGroup.Offense, "Speed from items and skills behave differently. Use SpeedCalc to find your breakpoints");
-			g10._GUI_NewItem(07, "{093}%/{068}% IAS", "Increased Attack Speed");
-			g10._GUI_NewItem(11, "{105}%/0% FCR", "Faster Cast Rate");
+			var g10 = new StatsGroup("Item / Skill", StatGroups.Offense, "Speed from items and skills behave differently. Use SpeedCalc to find your breakpoints");
+			g10.AddStat("{093}%/{068}% Increased Attack Speed (IAS)");
+			g10.AddStat("{105}%/0% Faster Cast Rate (FCR)");
 
-			var g11 = new GuiGroup("Offens", StatGroup.Offense);
-			g11._GUI_NewItem(02, "{025}% EWD", "Enchanced Weapon Damage");
-			g11._GUI_NewItem(04, "{119}% AR", "Attack Rating");
-			g11._GUI_NewItem(11, "{136}% CB", "Crushing Blow. Chance to deal physical damage based on target's current health");
-			g11._GUI_NewItem(12, "{141}% DS", "Deadly Strike. Chance to double physical damage of attack");
-			g11._GUI_NewItem(13, "{164}% UA", "Uninterruptable Attack");
+			var g11 = new StatsGroup("Offens", StatGroups.Offense);
+			g11.AddStat("{025}% Enchanced Weapon Damage (EWD)");
+			g11.AddStat("{119}% Attack Rating (AR)");
+			g11.AddStat("{136}% Crushing Blow. Chance to deal physical damage based on target's current health (CB)");
+			g11.AddStat("{141}% Deadly Strike. Chance to double physical damage of attack (DS)");
+			g11.AddStat("{164}% Uninterruptable Attack (UA)");
 			
-			g11._GUI_NewItem(07, "{489} TTAD", "Target Takes Additional Damage");
+			g11.AddStat("{489} Target Takes Additional Damage (TTAD)");
 
-			var g12 = new GuiGroup("Damage/Pierce", StatGroup.Offense , "Spell damage / -Enemy resist");
-			g12._GUI_NewItem(08, "{329}%/{333}%", "Fire", g_iColorRed);
-			g12._GUI_NewItem(09, "{331}%/{335}%", "Cold", g_iColorBlue);
-			g12._GUI_NewItem(10, "{330}%/{334}%", "Lightning", g_iColorGold);
-			g12._GUI_NewItem(11, "{332}%/{336}%", "Poison", g_iColorGreen);
-			g12._GUI_NewItem(12, "{431}% PSD", "Poison Skill Duration", g_iColorGreen);
-			g12._GUI_NewItem(13, "{357}%/0%", "Physical/Magic", g_iColorPink);
+			var g12 = new StatsGroup("Damage / Pierce", StatGroups.Offense , "Spell damage / -Enemy resist");
+			g12.AddStat("{329}%/{333}% Fire", "", Brushes.Red);
+			g12.AddStat("{331}%/{335}% Cold", "", Brushes.Blue);
+			g12.AddStat("{330}%/{334}% Lightning", "", lightningBrush);
+			g12.AddStat("{332}%/{336}% Poison", "", Brushes.Green);
+			g12.AddStat("{431}% Poison Skill Duration (PSD)", "", Brushes.Green);
+			g12.AddStat("{357}%/0% Physical/Magic", "", Brushes.Orange);
 
-			var g13 = new GuiGroup("Weapon Damage", StatGroup.Offense);
-			g13._GUI_NewItem(01, "{048}-{049}", "Fire", g_iColorRed);
-			g13._GUI_NewItem(02, "{054}-{055}", "Cold", g_iColorBlue);
-			g13._GUI_NewItem(03, "{050}-{051}", "Lightning", g_iColorGold);
-			g13._GUI_NewItem(04, "{057}-{058}/s", "Poison/sec", g_iColorGreen);
-			g13._GUI_NewItem(05, "{052}-{053}", "Magic", g_iColorPink);
-			g13._GUI_NewItem(06, "{021}-{022}", "One-hand physical damage. Estimated; may be inaccurate, especially when dual wielding");
-			g13._GUI_NewItem(07, "{023}-{024}", "Two-hand/Ranged physical damage. Estimated; may be inaccurate, especially when dual wielding");
+			var g13 = new StatsGroup("Weapon Damage", StatGroups.Offense);
+			g13.AddStat("{048}-{049} Fire", "", Brushes.Red);
+			g13.AddStat("{054}-{055} Cold", "", Brushes.Blue);
+			g13.AddStat("{050}-{051} Lightning", "", lightningBrush);
+			g13.AddStat("{057}-{058} Poison/sec", "", Brushes.Green);
+			g13.AddStat("{052}-{053} Magic", "", Brushes.Orange);
+			g13.AddStat("{021}-{022}", "One-hand physical damage. Estimated; may be inaccurate, especially when dual wielding");
+			g13.AddStat("{023}-{024}", "Two-hand/Ranged physical damage. Estimated; may be inaccurate, especially when dual wielding");
 
-			guiGroups = new List<GuiGroup>();
-			guiGroups.Add(g1);
-			guiGroups.Add(g2);
-			guiGroups.Add(g3);
-			guiGroups.Add(g4);
-			guiGroups.Add(g5);
-			guiGroups.Add(g6);
-			guiGroups.Add(g7);
-			guiGroups.Add(g8);
-			guiGroups.Add(g9);
-			guiGroups.Add(g10);
-			guiGroups.Add(g11);
-			guiGroups.Add(g12);
-			guiGroups.Add(g13);
+			var statsGroups = new List<StatsGroup>();
+			statsGroups.Add(g1);
+			statsGroups.Add(g2);
+			statsGroups.Add(g3);
+			statsGroups.Add(g4);
+			statsGroups.Add(g5);
+			statsGroups.Add(g6);
+			statsGroups.Add(g7);
+			statsGroups.Add(g8);
+			statsGroups.Add(g9);
+			statsGroups.Add(g10);
+			statsGroups.Add(g11);
+			statsGroups.Add(g12);
+			statsGroups.Add(g13);
+
+			return statsGroups;
 		}
 
-		public enum StatGroup
+		public enum StatGroups
 		{
 			Basic,
 			Defense,
 			Offense,
 		}
 
-		List<GuiGroup> guiGroups = new List<GuiGroup>();
-
-		public class GuiGroup
+		public class StatsGroup
 		{
 			public string ShortDescription;
-			public StatGroup StatGroup;
+			public StatGroups StatGroup;
 			public string FullDescription;
 
-			public List<GuiItem> guiItems = new List<GuiItem>();
+			public List<StatsItem> guiItems = new List<StatsItem>();
 
-			public GuiGroup(string shortDescription, StatGroup statGroup /*= StatGroup.Basic*/, string fullDescription = "")
+			public StatsGroup(string shortDescription, StatGroups statGroup, string fullDescription = "")
 			{
 				this.ShortDescription = shortDescription;
 				this.StatGroup = statGroup;
 				this.FullDescription = fullDescription;
 			}
 
-			public void _GUI_NewItem(int bla1, string sText, string description = "", int color = 0)
+			public void AddStat(string text, string description = "", Brush color = null)
 			{
-				guiItems.Add(new GuiItem(bla1, sText, description, color));
+				guiItems.Add(new StatsItem(text, description, color));
+			}
+
+			/// <summary>Statitem that changes color depending on value { statindex, thresholdGreen thresholdGold }</summary>
+			public void AddStat(string text, string description, int[] dynamicColor)
+			{
+				guiItems.Add(new StatsItem(text, description, dynamicColor));
 			}
 		}
 
-		public class GuiItem
+		public class StatsItem
 		{
-			string sText;
-			public string Description;
-			int iColor;
-
-			public GuiItem(int bla1, string sText, string description = "", int color = 0)
+			private string text;
+			private string description;
+			private int[] dynamicColor = null;
+			private Brush _color = Brushes.Black;
+			/// <summary>Important: Freeze brush after assigned, because it will be used in the UI-thread and will otherwise throw an exception!</summary>
+			private Brush color
 			{
-				this.sText = sText;
-				this.Description = description;
+				get { return _color; }
+				set { _color = value;
+					  _color.Freeze();
+				}
 			}
 
-			public string Update()
+
+			public StatsItem(string text, string description, Brush color)
 			{
-				string rsText = sText;
-				int iMatches, iStatValue;
+				this.text = text;
+				this.description = description;
+				if (color != null) {
+					this.color = color;
+				}
+			}
 
-				var asMatches = Regex.Match(sText, "(\\[(\\d+):(\\d+)\\/(\\d+)\\])");
-				iMatches = asMatches.Groups.Count;
+			public StatsItem(string text, string description = "", int[] dynamicColor = null)
+			{
+				this.text = text;
+				this.description = description;
+				this.dynamicColor = dynamicColor;
+			}
 
-				if (iMatches != 1 && iMatches != 5) {
-					throw new Exception("GuiItem: Invalid coloring pattern '" + sText + "'");
-					//exit
-				} else if (iMatches == 5) {
-					rsText = sText.Replace(asMatches.Groups[1].Value, "");
-					iColor = g_iColorRed;
+			public Brush GetColor()
+			{
+				if (dynamicColor != null && dynamicColor.Length == 3) {
 
-					iStatValue = mainInstance.stats.GetStatValue(int.Parse(asMatches.Groups[2].Value));
-					if (iStatValue >= int.Parse(asMatches.Groups[3].Value)) {
-						iColor = g_iColorGreen;
-					} else if (iStatValue >= int.Parse(asMatches.Groups[4].Value)) {
-						iColor = g_iColorGold;
+					int statValue = mainInstance.stats.GetStatValue(dynamicColor[0]);
+					if (statValue >= dynamicColor[1]) {
+						color = Brushes.Green;
+					} else if (statValue >= dynamicColor[2]) {
+						color = Brushes.LightGoldenrodYellow;
+					} else {
+						color = Brushes.Red;
 					}
 				}
 
-				var asMatches2 = Regex.Matches(sText, "{(\\d+)}");
-				for (int j = 0; j < asMatches2.Count; j += 1) { /*for j = 0 to UBound(asMatches2) - 1 step 2*/
+				return color;
+			}
+
+			public string GetText()
+			{
+				string resultText = text;
+
+				var asMatches2 = Regex.Matches(text, "{(\\d+)}");
+				for (int j = 0; j < asMatches2.Count; j++) {
 
 					string sValue = mainInstance.stats.GetStatValue(int.Parse(asMatches2[j].Groups[1].Value)).ToString();
-					rsText = rsText.Replace(asMatches2[j].Groups[0].Value, sValue);
+					resultText = resultText.Replace(asMatches2[j].Groups[0].Value, sValue);
 				}
 
-				//sText = StringStripWS(sText, BitOR(STR_STRIPLEADING, STR_STRIPTRAILING, STR_STRIPSPACES));
-				//GUICtrlSetData(idControl, sText);
-				//if (iColor !=/*<>*/ 0) { GUICtrlSetColor(idControl, iColor); }
+				if (description.Length > 0) {
+					resultText += " | " + description;
+				}
 
-				return rsText;
+				return resultText;
 			}
 		}
 

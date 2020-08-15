@@ -75,7 +75,6 @@
 					</Grid.RowDefinitions>
 					<StackPanel Grid.Row="0">
 						<CheckBox x:Name="readMercenary">Read Mercenary</CheckBox>
-						<Button Click="Button_Click_Read">Read stats</Button>
 					</StackPanel>
 					<Grid Grid.Row="1">
 						<Grid.ColumnDefinitions>

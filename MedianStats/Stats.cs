@@ -61,7 +61,7 @@ namespace MedianStats
 
 		public IntPtr GetUnitToRead()
 		{
-			var bMercenary = mainInstance.readMercenary.IsChecked.Value;
+			var bMercenary = mainInstance.ReadMercenary;
 			return g_hD2Client + (bMercenary ? 0x10A80C : 0x11BBFC);
 		}
 
@@ -86,6 +86,11 @@ namespace MedianStats
 
 			aiOffsets[2] += 0x4;
 			var iStatCount = (ushort)MemoryPointerRead(pUnitAddress, g_ahD2Handle, aiOffsets, "word") - 1;
+
+			if (iStatCount == -1) {
+				// Mercenary is dead
+				return;
+			}
 
 			//var tagStat = "word wSubIndex;word wStatIndex;int dwStatValue;";
 			//string tagStatsAll = "";
