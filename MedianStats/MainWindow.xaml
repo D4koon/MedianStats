@@ -14,9 +14,9 @@
 			<RowDefinition Height="18"/>
 		</Grid.RowDefinitions>
 		<TabControl Grid.Row="0">
-			<TabItem Header="Notifier">
+			<TabItem Header="{DynamicResource Tab_Notifier_Header}">
 				<TabControl TabStripPlacement="Bottom">
-					<TabItem Header="Triggers">
+					<TabItem Header="{DynamicResource Tab_Notifier_Triggers_Header}">
 						<RichTextBox VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="notifierText" FontFamily="Courier New">
 							<RichTextBox.Resources>
 								<!-- Set vertical space between newlines for paragraphs -->
@@ -52,7 +52,7 @@
 							</FlowDocument>
 						</RichTextBox>
 					</TabItem>
-					<TabItem Header="Sounds">
+					<TabItem Header="{DynamicResource Tab_Notifier_Sounds_Header}">
 						<StackPanel>
 							<StackPanel x:Name="volumneSliders">
 								<StackPanel Orientation="Horizontal">
@@ -62,19 +62,19 @@
 							</StackPanel>
 						</StackPanel>
 					</TabItem>
-					<TabItem Header="Helper">
+					<TabItem Header="{DynamicResource Tab_Notifier_Helper_Header}">
 							<local:NotifyHelper Width="Auto" Height="Auto"/>
 					</TabItem>
 				</TabControl>
 			</TabItem>
-			<TabItem Header="Stats">
+			<TabItem Header="{DynamicResource Tab_Stats_Header}">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="20*"/>
 					</Grid.RowDefinitions>
 					<StackPanel Grid.Row="0">
-						<CheckBox x:Name="readMercenary">Read Mercenary</CheckBox>
+						<CheckBox x:Name="readMercenary" Content="{DynamicResource Read_Mercenary}"/>
 					</StackPanel>
 					<Grid Grid.Row="1">
 						<Grid.ColumnDefinitions>
@@ -84,29 +84,29 @@
 						</Grid.ColumnDefinitions>
 
 						<DockPanel Grid.Column="0">
-							<Label DockPanel.Dock="Top" HorizontalAlignment="Center">Basic Stats</Label>
+							<Label DockPanel.Dock="Top" HorizontalAlignment="Center" Content="{DynamicResource Basic_Stats}"/>
 							<ListView x:Name="statsListBasic"/>
 						</DockPanel>
 						<DockPanel Grid.Column="1">
-							<Label DockPanel.Dock="Top" HorizontalAlignment="Center">Defensive stats</Label>
+							<Label DockPanel.Dock="Top" HorizontalAlignment="Center" Content="{DynamicResource Defensive_Stats}"/>
 							<ListView x:Name="statsListDefens"/>
 						</DockPanel>
 						<DockPanel Grid.Column="2">
-							<Label DockPanel.Dock="Top" HorizontalAlignment="Center">Offensive stats</Label>
+							<Label DockPanel.Dock="Top" HorizontalAlignment="Center" Content="{DynamicResource Offensive_Stats}"/>
 							<ListView x:Name="statsListOffens"/>
 						</DockPanel>
 					</Grid>
 				</Grid>
 			</TabItem>
-			<TabItem Header="Options">
+			<TabItem Header="{DynamicResource Tab_Options_Header}">
 				<Grid>
 					<StackPanel>
-						<CheckBox x:Name="notifyEnabled" Checked="NotifyEnabled_Changed" Unchecked="NotifyEnabled_Changed">Enable notifier</CheckBox>
-						<CheckBox x:Name="notifySuperior" Checked="NotifySuperior_Changed" Unchecked="NotifySuperior_Changed">notifier prefixes superior items with 'Superior'</CheckBox>
-						<CheckBox x:Name="toggle" Checked="Toggle_Changed" Unchecked="Toggle_Changed">Switch Show Items between hold/toggle mode</CheckBox>
-						<CheckBox x:Name="mousefix" Checked="Mousefix_Changed" Unchecked="Mousefix_Changed">Continue attacking when monster dies under cursor</CheckBox>
-						<CheckBox x:Name="nopickup" Checked="Nopickup_Changed" Unchecked="Nopickup_Changed">Always activate /nopickup</CheckBox>
-						<CheckBox x:Name="alwaysRun" Checked="AlwaysRun_Changed" Unchecked="AlwaysRun_Changed">Always run</CheckBox>
+						<CheckBox x:Name="notifyEnabled" Checked="NotifyEnabled_Changed" Unchecked="NotifyEnabled_Changed" Content="{DynamicResource Enable_Notifier}"/>
+						<CheckBox x:Name="notifySuperior" Checked="NotifySuperior_Changed" Unchecked="NotifySuperior_Changed" Content="{DynamicResource Notifier_Prefix_Superior}"/>
+						<CheckBox x:Name="toggle" Checked="Toggle_Changed" Unchecked="Toggle_Changed" Content="{DynamicResource Show_Items_Toggle}"/>
+						<CheckBox x:Name="mousefix" Checked="Mousefix_Changed" Unchecked="Mousefix_Changed" Content="{DynamicResource Continue_Attacking}"/>
+						<CheckBox x:Name="nopickup" Checked="Nopickup_Changed" Unchecked="Nopickup_Changed" Content="{DynamicResource Always_Nopickup}"/>
+						<CheckBox x:Name="alwaysRun" Checked="AlwaysRun_Changed" Unchecked="AlwaysRun_Changed" Content="{DynamicResource Always_Run}"/>
 					</StackPanel>
 				</Grid>
 			</TabItem>

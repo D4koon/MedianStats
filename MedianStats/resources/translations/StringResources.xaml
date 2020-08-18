@@ -1,0 +1,57 @@
+<ResourceDictionary 
+	xmlns ="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+	xmlns:system="clr-namespace:System;assembly=mscorlib"
+	xmlns:presentationFramework="clr-namespace:System.Windows.Controls;assembly=PresentationFramework">
+
+	<!-- Tab Stats -->
+	<system:String x:Key="Tab_Stats_Header">Stats</system:String>
+	<system:String x:Key="Read_Mercenary">Read Mercenary</system:String>
+	<system:String x:Key="Basic_Stats">Basic Stats</system:String>
+	<system:String x:Key="Defensive_Stats">Defensive Stats</system:String>
+	<system:String x:Key="Offensive_Stats">Offensive Stats</system:String>
+
+	<!-- Tab Options -->
+	<system:String x:Key="Tab_Options_Header">Options</system:String>
+	<system:String x:Key="Enable_Notifier">Enable Notifier</system:String>
+	<system:String x:Key="Notifier_Prefix_Superior">Notifier prefixes superior items with 'Superior'</system:String>
+	<system:String x:Key="Show_Items_Toggle">Switch Show Items between hold/toggle mode</system:String>
+	<system:String x:Key="Continue_Attacking">Continue attacking when monster dies under cursor</system:String>
+	<system:String x:Key="Always_Nopickup">Always activate /nopickup</system:String>
+	<system:String x:Key="Always_Run">Always Run</system:String>
+	
+	<!-- Tab Notifier -->
+	<system:String x:Key="Tab_Notifier_Header">Notifier</system:String>
+	
+	<!-- Tab Notifier/Triggers -->
+	<system:String x:Key="Tab_Notifier_Triggers_Header">Triggers</system:String>
+	
+	<!-- Tab Notifier/Sounds -->
+	<system:String x:Key="Tab_Notifier_Sounds_Header">Sounds</system:String>
+	
+	<!-- Tab Notifier/Helper -->
+	<system:String x:Key="Tab_Notifier_Helper_Header">Helper</system:String>
+	<system:String x:Key="Show_Matches">Show Matches</system:String>
+	<presentationFramework:TextBlock x:Key="Show_Matches_Description">"Item Name" flag1 flag2 ... flagN # Everything after hashtag is a comment.<LineBreak/>
+<LineBreak/>
+Item name is what youre matching against. Its a regex string.<LineBreak/>
+If youre unsure what regex is, use letters only.<LineBreak/>
+<LineBreak/>
+Flags:<LineBreak/>
+> 0-4 sacred - Item must be one of these tiers.<LineBreak/>
+   Tier 0 means untiered items (runes, amulets, etc).<LineBreak/>
+> normal superior rare set unique - Item must be one of these qualities.<LineBreak/>
+> eth - Item must be ethereal.<LineBreak/>
+> white red lime blue gold orange yellow green purple - notification color.<LineBreak/>
+StringFormat(> sound[1-%s] - notification sound., g_iNumSounds)<LineBreak/>
+> hide - Hides matching items on ground, without notification. Requires DropFilter.dll<LineBreak/>
+<LineBreak/>
+Example:<LineBreak/>
+\"Battle\" sacred unique eth sound3<LineBreak/>
+This would notify for ethereal SU Battle Axe, Battle Staff,<LineBreak/>
+Short Battle Bow and Long Battle Bow, and would play Sound 3<LineBreak/>
+<LineBreak/>
+Write something in this box and click "Show Matches" to see what matches!
+	</presentationFramework:TextBlock>
+
+</ResourceDictionary>

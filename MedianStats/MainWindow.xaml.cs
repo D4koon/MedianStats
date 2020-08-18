@@ -36,6 +36,10 @@ namespace MedianStats
 
 
 		// TODO: rechten und linken slot tauschen -> mit rechtsklick den linke slot ausführen
+		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
+		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
+		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
+		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
 
 		public MainWindow()
 		{
@@ -43,6 +47,7 @@ namespace MedianStats
 
 			mainInstance = this;
 			ExeDir = System.Reflection.Assembly.GetExecutingAssembly().Location.Substring(0, System.Reflection.Assembly.GetExecutingAssembly().Location.LastIndexOf('\\'));
+			SetLanguageDictionary();
 
 			notifierText.AppendText(Settings.Default.notifierText.Length > 0 ? Settings.Default.notifierText : notifierTextDefault);
 
@@ -110,6 +115,34 @@ namespace MedianStats
 
 				notifier.Sounds.Add(i, Settings.Default.notifierSounds[i]);
 			}
+		}
+
+		private void SetLanguageDictionary()
+		{
+			const string translationFoler = "resources\\translations\\";
+
+			ResourceDictionary dict = new ResourceDictionary();
+			// Culture-keys
+			// https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/a9eac961-e77d-41a6-90a5-ce1a8b0cdb9c?redirectedfrom=MSDN
+			switch (Thread.CurrentThread.CurrentCulture.ToString()) {
+				case "en-US":
+					dict.Source = new Uri(translationFoler + "StringResources.xaml", UriKind.Relative);
+					break;
+				case "zh-Hans":
+				case "zh":
+				case "zh-CN":
+				case "zh-SG":
+				case "zh-Hant":
+				case "zh-HK":
+				case "zh-MO":
+				case "zh-TW":
+					dict.Source = new Uri(translationFoler + "StringResources.zh.xaml", UriKind.Relative);
+					break;
+				default:
+					dict.Source = new Uri(translationFoler + "StringResources.xaml", UriKind.Relative);
+					break;
+			}
+			this.Resources.MergedDictionaries.Add(dict);
 		}
 
 		public void NotifierLineAsError(int lineNumber)

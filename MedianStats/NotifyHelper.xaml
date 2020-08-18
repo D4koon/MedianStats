@@ -6,39 +6,17 @@
 		xmlns:local="clr-namespace:MedianStats"
 		mc:Ignorable="d"
 		Height="429.508" Width="544.262">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0">
-            <Label>
-                <TextBlock>
-				"Item Name" flag1 flag2 ... flagN # Everything after hashtag is a comment.<LineBreak/>
-<LineBreak/>
-Item name is what youre matching against. Its a regex string.<LineBreak/>
-If youre unsure what regex is, use letters only.<LineBreak/>
-<LineBreak/>
-Flags:<LineBreak/>
-> 0-4 sacred - Item must be one of these tiers.<LineBreak/>
-   Tier 0 means untiered items (runes, amulets, etc).<LineBreak/>
-> normal superior rare set unique - Item must be one of these qualities.<LineBreak/>
-> eth - Item must be ethereal.<LineBreak/>
-> white red lime blue gold orange yellow green purple - notification color.<LineBreak/>
-StringFormat(> sound[1-%s] - notification sound., g_iNumSounds)<LineBreak/>
-> hide - Hides matching items on ground, without notification. Requires DropFilter.dll<LineBreak/>
-<LineBreak/>
-Example:<LineBreak/>
-\"Battle\" sacred unique eth sound3<LineBreak/>
-This would notify for ethereal SU Battle Axe, Battle Staff,<LineBreak/>
-Short Battle Bow and Long Battle Bow, and would play Sound 3<LineBreak/>
-<LineBreak/>
-Write something in this box and click "Show Matches" to see what matches!
-                </TextBlock>
-            </Label>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+		<StackPanel Grid.Row="0">
+			<Label Content="{DynamicResource Show_Matches_Description}">
+			</Label>
 			<TextBox x:Name="testString"/>
-			<Button Click="Button_Click">Show Matches</Button>
-        </StackPanel>
-		<ListBox x:Name="matchesList"  Grid.Row="1"/>
-    </Grid>
+			<Button Click="Button_Click" Content="{DynamicResource Show_Matches}"/>
+		</StackPanel>
+		<ListBox x:Name="matchesList" Grid.Row="1"/>
+	</Grid>
 </UserControl>

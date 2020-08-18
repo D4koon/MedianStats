@@ -5,6 +5,11 @@
 			 Startup="App_Startup"
 			 Exit="Application_Exit">
 	<Application.Resources>
-		 
+		<!-- Set default dictionary for translation -->
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="resources\translations\StringResources.xaml"/>
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
 	</Application.Resources>
 </Application>
