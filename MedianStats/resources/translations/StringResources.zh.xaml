@@ -5,68 +5,68 @@
 	xmlns:presentationFramework="clr-namespace:System.Windows.Controls;assembly=PresentationFramework">
 
 	<!-- Tab Stats -->
-	<system:String x:Key="Tab_Stats_Header">Stats</system:String>
-	<system:String x:Key="Read_Mercenary">Read Mercenary</system:String>
-	<system:String x:Key="Basic_Stats">Basic Stats</system:String>
-	<system:String x:Key="Defensive_Stats">Defensive Stats</system:String>
-	<system:String x:Key="Offensive_Stats">Offensive Stats</system:String>
+	<system:String x:Key="Tab_Stats_Header">统计数据</system:String>
+	<system:String x:Key="Read_Mercenary">读取佣兵</system:String>
+	<system:String x:Key="Basic_Stats">基础数据</system:String>
+	<system:String x:Key="Defensive_Stats">防御性数据</system:String>
+	<system:String x:Key="Offensive_Stats">攻击性数据</system:String>
 
 	<!-- Tab Options -->
-	<system:String x:Key="Tab_Options_Header">Options</system:String>
-	<system:String x:Key="Enable_Notifier">Enable Notifier</system:String>
-	<system:String x:Key="Notifier_Prefix_Superior">Notifier prefixes superior items with 'Superior'</system:String>
-	<system:String x:Key="Show_Items_Toggle">Switch Show Items between hold/toggle mode</system:String>
-	<system:String x:Key="Continue_Attacking">Continue attacking when monster dies under cursor</system:String>
-	<system:String x:Key="Always_Nopickup">Always activate /nopickup</system:String>
-	<system:String x:Key="Always_Run">Always Run</system:String>
+	<system:String x:Key="Tab_Options_Header">选项</system:String>
+	<system:String x:Key="Enable_Notifier">启用掉落通知</system:String>
+	<system:String x:Key="Notifier_Prefix_Superior">在掉落通知中为“超强的”物品添加 'Superior' 前缀</system:String>
+	<system:String x:Key="Show_Items_Toggle">切换显示物品的按住/切换模式 (Switch Show Items between hold/toggle mode)</system:String>
+	<system:String x:Key="Continue_Attacking">光标下怪物死亡时仍继续攻击</system:String>
+	<system:String x:Key="Always_Nopickup">总是激活 /nopickup (非显示状态时不自动拾取)</system:String>
+	<system:String x:Key="Always_Run">总是跑步 (锁定跑步)</system:String>
 
 	<!-- Tab Notifier -->
-	<system:String x:Key="Tab_Notifier_Header">Notifier</system:String>
+	<system:String x:Key="Tab_Notifier_Header">掉落通知</system:String>
 
 	<!-- Tab Notifier/Triggers -->
-	<system:String x:Key="Tab_Notifier_Triggers_Header">Triggers</system:String>
+	<system:String x:Key="Tab_Notifier_Triggers_Header">触发规则</system:String>
 
 	<!-- Tab Notifier/Sounds -->
-	<system:String x:Key="Tab_Notifier_Sounds_Header">Sounds</system:String>
+	<system:String x:Key="Tab_Notifier_Sounds_Header">声音</system:String>
 
 	<!-- Tab Notifier/Helper -->
-	<system:String x:Key="Tab_Notifier_Helper_Header">Helper</system:String>
-	<system:String x:Key="Show_Matches">Show Matches</system:String>
-	<presentationFramework:TextBlock x:Key="Show_Matches_Description">"Item Name" flag1 flag2 ... flagN # Everything after hashtag is a comment.
+	<system:String x:Key="Tab_Notifier_Helper_Header">助手</system:String>
+	<system:String x:Key="Show_Matches">显示匹配</system:String>
+	<presentationFramework:TextBlock x:Key="Show_Matches_Description">"物品名称" 条件1 条件2 ... 条件N # 注释前所有标点均为半角，任何井号后内容均为注释。
 		<LineBreak/>
 		<LineBreak/>
-		Item name is what youre matching against. Its a regex string.
+		物品名称是你要匹配的内容，是正则表达式（Regular Expression）的字符串。
 		<LineBreak/>
-		If youre unsure what regex is, use letters only.
-		<LineBreak/>
-		<LineBreak/>
-		Flags:
-		<LineBreak/>
-		> 0-4 sacred - Item must be one of these tiers.
-		<LineBreak/>
-		Tier 0 means untiered items (runes, amulets, etc).
-		<LineBreak/>
-		> normal superior rare set unique - Item must be one of these qualities.
-		<LineBreak/>
-		> eth - Item must be ethereal.
-		<LineBreak/>
-		> white red lime blue gold orange yellow green purple - notification color.
-		<LineBreak/>
-		StringFormat(> sound[1-%s] - notification sound., g_iNumSounds)
-		<LineBreak/>
-		> hide - Hides matching items on ground, without notification. Requires DropFilter.dll
+		若你不懂什么是正则，请仅使用纯文字。
 		<LineBreak/>
 		<LineBreak/>
-		Example:
+		条件:
+		<LineBreak/>
+		> 0-4 sacred - 物品必须为其中之一的层级。
+		<LineBreak/>
+		层级 0 可匹配无层级物品 (符文、护符等)。
+		<LineBreak/>
+		> normal superior rare set unique - 物品必须为普通、超强、稀有、套装、独特其中之一的品质。
+		<LineBreak/>
+		> eth - 物品必须为无形。
+		<LineBreak/>
+		> white red lime blue gold orange yellow green purple - 通知颜色。
+		<LineBreak/>
+		> sound[1-5] - 通知声音。
+		<LineBreak/>
+		> hide - 隐藏地上的匹配物品，不发送通知。需要 DropFilter.dll
+		<LineBreak/>
+		<LineBreak/>
+		示例:
 		<LineBreak/>
 		\"Battle\" sacred unique eth sound3
 		<LineBreak/>
-		This would notify for ethereal SU Battle Axe, Battle Staff,
+		此规则将通知无形神圣独特(Eth SU)的 战斗斧 (Battle Axe)、战斗法杖(Battle Staff)、
 		<LineBreak/>
-		Short Battle Bow and Long Battle Bow, and would play Sound 3
+		短战斗弓 (Short Battle Bow)以及 长战斗弓 (Long Battle Bow)的掉落，并播放第3个通知声音
 		<LineBreak/>
 		<LineBreak/>
-		Write something in this box and click "Show Matches" to see what matches!
+		将规则写入框内并点击 "显示匹配" 可测试此规则可匹配的物品。
 	</presentationFramework:TextBlock>
 	
 </ResourceDictionary>
