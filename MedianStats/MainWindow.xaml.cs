@@ -29,7 +29,7 @@ namespace MedianStats
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+		private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
 		public static MainWindow mainInstance;
 		public static string ExeDir;
@@ -40,14 +40,32 @@ namespace MedianStats
 		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
 		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
 		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
+		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
+		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
+		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
+		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
+		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
+		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
+		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
+		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
+		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
+		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
+		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
+		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
+		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
+		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
+		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
+		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
+
 
 		public MainWindow()
 		{
+			mainInstance = this;
+			// NOTE: It is important to init the language-dictionary before InitializeComponents() beause StatsView needs it in the constructor!
+			InitLanguageDictionary();
 			InitializeComponent();
 
-			mainInstance = this;
 			ExeDir = System.Reflection.Assembly.GetExecutingAssembly().Location.Substring(0, System.Reflection.Assembly.GetExecutingAssembly().Location.LastIndexOf('\\'));
-			SetLanguageDictionary();
 
 			notifierText.AppendText(Settings.Default.notifierText.Length > 0 ? Settings.Default.notifierText : notifierTextDefault);
 
@@ -117,7 +135,7 @@ namespace MedianStats
 			}
 		}
 
-		private void SetLanguageDictionary()
+		private void InitLanguageDictionary()
 		{
 			const string translationFoler = "resources\\translations\\";
 
@@ -200,8 +218,7 @@ namespace MedianStats
 		NoPickup noPickup = new NoPickup();
 		ConfigAlwaysRun configAlwaysRun = new ConfigAlwaysRun();
 		public Notifier notifier = new Notifier();
-		public Stats stats = new Stats();
-
+		
 		public void Main()
 		{
 			//AutoItApi._HotKey_Disable(HK_FLAG_D2STATS);
@@ -246,7 +263,7 @@ namespace MedianStats
 					if (timer % 5 == 0) {
 						// Throttle update. This is only a workaround to get the load on the cpu from ~3% to ~1%
 						// Maybe implemente a proper wpf-implementation for the stats to fix that completle
-						UpdateStats();
+						statsControl.UpdateStats();
 					}
 					
 					if (Settings.Default.notifyEnabled) {
@@ -288,63 +305,7 @@ namespace MedianStats
 			}
 		}
 
-		public bool ReadMercenary { get { return Dispatcher.Invoke(() => { return readMercenary.IsChecked.Value; }); } }
-
-
-		List<StatsGroup> statsGroups = null;
-
-		private void UpdateStats()
-		{
-			if (statsGroups == null) {
-				statsGroups = CreateStatsGroups();
-			}
-			
-			stats.UpdateStatValues();
-
-			UpdateStatsUI();
-		}
-
-		private void UpdateStatsUI()
-		{
-			if (!CheckAccess()) {
-				Dispatcher.Invoke(() => UpdateStatsUI());
-				return;
-			}
-
-			var statsListBasicNew = new ObservableCollection<Label>();
-			var statsListDefensNew = new ObservableCollection<Label>();
-			var statsListOffensNew = new ObservableCollection<Label>();
-
-			foreach (var guiGroup in statsGroups) {
-				ObservableCollection<Label> listView;
-				switch (guiGroup.StatGroup) {
-					case StatGroups.Basic:
-						listView = statsListBasicNew;
-						break;
-					case StatGroups.Defense:
-						listView = statsListDefensNew;
-						break;
-					case StatGroups.Offense:
-						listView = statsListOffensNew;
-						break;
-					default:
-						throw new Exception("Button_Click_Read() - Unknown StatGroup \"" + guiGroup.StatGroup + "\"");
-				}
-
-				listView.Add(new Label() { Content = "=== " + guiGroup.ShortDescription + " ===", Padding = new Thickness(0), FontWeight = FontWeights.Bold });
-
-				foreach (var statItem in guiGroup.guiItems) {
-					string text = statItem.GetText();
-					var color = statItem.GetColor();
-
-					listView.Add(new Label() { Content = text, Padding = new Thickness(0), FontFamily = new FontFamily("Consolas"), Foreground = color });
-				}
-
-			}
-			statsListBasic.ItemsSource = statsListBasicNew;
-			statsListDefens.ItemsSource = statsListDefensNew;
-			statsListOffens.ItemsSource = statsListOffensNew;
-		}
+		public bool ReadMercenary { get { return Dispatcher.Invoke(() => { return statsControl.readMercenary.IsChecked.Value; }); } }
 
 		public bool IsIngame()
 		{
@@ -718,238 +679,6 @@ namespace MedianStats
 			}
 
 			return vOld;
-		}
-
-		//#EndRegion
-
-		//#Region GUI
-
-		private List<StatsGroup> CreateStatsGroups()
-		{
-			var brushConverter = new BrushConverter();
-			Brush lightningBrush = (Brush)brushConverter.ConvertFromString("#FFCEBD00");
-
-			var g1 = new StatsGroup("Base stats", StatGroups.Basic);
-			g1.AddStat(" Strength Base: {000} Bonus: {359}%/{900}");
-			g1.AddStat("Dexterity Base: {002} Bonus: {360}%/{901}");
-			g1.AddStat(" Vitality Base: {003} Bonus: {362}%/{902}");
-			g1.AddStat("   Energy Base: {001} Bonus: {361}%/{903}");
-
-			var g2 = new StatsGroup("Other stats", StatGroups.Basic);
-			g2.AddStat("{076}% Maximum Life");
-			g2.AddStat("{077}% Maximum Mana");
-			
-			g2.AddStat("{080}% Magic Find");
-			g2.AddStat("{079}% Gold Find");
-			g2.AddStat("{085}% Experience gained");
-			g2.AddStat("{479} Maximum Skill Level");
-			g2.AddStat("{185} Signets of Learning", "Up to 400 can be used || See cube recipes in Median-docu for details", new int[] { 185, 400, 400 });
-			//g2.AddItem("Veteran tokens", "On Nightmare and Hell difficulty, you can find veteran monsters near the end of|each Act. There are five types of veteran monsters, one for each Act||[Class Charm] + each of the 5 tokens ? returns [Class Charm] with added bonuses| +1 to [Your class] Skill Levels| +20% to Experience Gained", new int[] { 219, 1, 1});
-
-			g2.AddStat("{096}%/{067}% Faster Run/Walk", "Faster Run/Walk");
-
-			g2.AddStat("{278} Strength Factor (SF)");
-			g2.AddStat("{485} Energy Factor (EF)");
-			g2.AddStat("{904}% Factor cap.", "100% means you don't benefit from more str/ene factor");
-
-			g2.AddStat("{409}% Buff/Debuff/Cold Skill Duration");
-			g2.AddStat("{27}% Mana Regeneration");
-
-			var g3 = new StatsGroup("Minions", StatGroups.Basic);
-			g3.AddStat("{444}% Life");
-			g3.AddStat("{470}% Damage");
-			g3.AddStat("{487}% Resist");
-			g3.AddStat("{500}% Attack Rating (AR)");
-
-			var g4 = new StatsGroup("Life / Mana", StatGroups.Basic);
-			g4.AddStat("{060}%/{062}% Life/Mana Stolen per Hit");
-			g4.AddStat("{086}/{138} Life/Mana after each Kill (*aeK)");
-			g4.AddStat("{208}/{209} Life/Mana on Striking (*oS)");
-			g4.AddStat("{210}/{295} Life/Mana on Attack (*oA)");
-
-			var g5 = new StatsGroup("Other", StatGroups.Basic);
-			g5.AddStat("RIP", "Slain Monsters Rest In Peace", new int[] { 108, 1, 1 });
-
-			var g6 = new StatsGroup("Resistance", StatGroups.Defense);
-			g6.AddStat("{039}% Fire", "", Brushes.Red);
-			g6.AddStat("{043}% Cold", "", Brushes.Blue);
-			g6.AddStat("{041}% Lightning", "", lightningBrush);
-			g6.AddStat("{045}% Poison", "", Brushes.Green);
-			g6.AddStat("{037}% Magic", "", Brushes.Orange);
-			g6.AddStat("{036}% Physical", "");
-
-			g6.AddStat("{171}% Total Character Defense (TCD)");
-			g6.AddStat("{035} Magic Damage Reduction (MDR)");
-			g6.AddStat("{034} Physical Damage Reduction (PDR)");
-			g6.AddStat("{338}% Dodge", "Chance to avoid melee attacks while standing still");
-			g6.AddStat("{339}% Avoid", "Chance to avoid projectiles while standing still");
-			g6.AddStat("{340}% Evade", "Chance to avoid any attack while moving");
-
-			g6.AddStat("{109}% Curse Length Reduction (CLR)");
-			g6.AddStat("{110}% Poison Length Reduction (PLR)");
-
-			var g7 = new StatsGroup("Item / Skill", StatGroups.Defense, "Speed from items and skills behave differently. Use SpeedCalc to find your breakpoints");
-			g7.AddStat("{099}%/{069}% Faster Hit Recovery (FHR)");
-			g7.AddStat("{102}%/{069}% Faster Block Rate (FBR)");
-
-			var g8 = new StatsGroup("Slow", StatGroups.Defense);
-			g8.AddStat("{150}%/{376}% Slows Target / Slows Melee Target");
-			g8.AddStat("{363}%/{493}% Slows Attacker / Slows Ranged Attacker");
-
-			var g9 = new StatsGroup("Absorb / Flat absorb", StatGroups.Defense, "Absorb / Flat absorb");
-			g9.AddStat("{142}%/{143} Fire", "", Brushes.Red);
-			g9.AddStat("{148}%/{149} Cold", "", Brushes.Blue);
-			g9.AddStat("{144}%/{145} Lightning", "", lightningBrush);
-			g9.AddStat("{146}%/{147} Magic", "", Brushes.Orange);
-
-			var g10 = new StatsGroup("Item / Skill", StatGroups.Offense, "Speed from items and skills behave differently. Use SpeedCalc to find your breakpoints");
-			g10.AddStat("{093}%/{068}% Increased Attack Speed (IAS)");
-			g10.AddStat("{105}%/0% Faster Cast Rate (FCR)");
-
-			var g11 = new StatsGroup("Offens", StatGroups.Offense);
-			g11.AddStat("{025}% Enchanced Weapon Damage (EWD)");
-			g11.AddStat("{119}% Attack Rating (AR)");
-			g11.AddStat("{136}% Crushing Blow. Chance to deal physical damage based on target's current health (CB)");
-			g11.AddStat("{141}% Deadly Strike. Chance to double physical damage of attack (DS)");
-			g11.AddStat("{164}% Uninterruptable Attack (UA)");
-			
-			g11.AddStat("{489} Target Takes Additional Damage (TTAD)");
-
-			var g12 = new StatsGroup("Damage / Pierce", StatGroups.Offense , "Spell damage / -Enemy resist");
-			g12.AddStat("{329}%/{333}% Fire", "", Brushes.Red);
-			g12.AddStat("{331}%/{335}% Cold", "", Brushes.Blue);
-			g12.AddStat("{330}%/{334}% Lightning", "", lightningBrush);
-			g12.AddStat("{332}%/{336}% Poison", "", Brushes.Green);
-			g12.AddStat("{431}% Poison Skill Duration (PSD)", "", Brushes.Green);
-			g12.AddStat("{357}%/0% Physical/Magic", "", Brushes.Orange);
-
-			var g13 = new StatsGroup("Weapon Damage", StatGroups.Offense);
-			g13.AddStat("{048}-{049} Fire", "", Brushes.Red);
-			g13.AddStat("{054}-{055} Cold", "", Brushes.Blue);
-			g13.AddStat("{050}-{051} Lightning", "", lightningBrush);
-			g13.AddStat("{057}-{058} Poison/sec", "", Brushes.Green);
-			g13.AddStat("{052}-{053} Magic", "", Brushes.Orange);
-			g13.AddStat("{021}-{022}", "One-hand physical damage. Estimated; may be inaccurate, especially when dual wielding");
-			g13.AddStat("{023}-{024}", "Two-hand/Ranged physical damage. Estimated; may be inaccurate, especially when dual wielding");
-
-			var statsGroups = new List<StatsGroup>();
-			statsGroups.Add(g1);
-			statsGroups.Add(g2);
-			statsGroups.Add(g3);
-			statsGroups.Add(g4);
-			statsGroups.Add(g5);
-			statsGroups.Add(g6);
-			statsGroups.Add(g7);
-			statsGroups.Add(g8);
-			statsGroups.Add(g9);
-			statsGroups.Add(g10);
-			statsGroups.Add(g11);
-			statsGroups.Add(g12);
-			statsGroups.Add(g13);
-
-			return statsGroups;
-		}
-
-		public enum StatGroups
-		{
-			Basic,
-			Defense,
-			Offense,
-		}
-
-		public class StatsGroup
-		{
-			public string ShortDescription;
-			public StatGroups StatGroup;
-			public string FullDescription;
-
-			public List<StatsItem> guiItems = new List<StatsItem>();
-
-			public StatsGroup(string shortDescription, StatGroups statGroup, string fullDescription = "")
-			{
-				this.ShortDescription = shortDescription;
-				this.StatGroup = statGroup;
-				this.FullDescription = fullDescription;
-			}
-
-			public void AddStat(string text, string description = "", Brush color = null)
-			{
-				guiItems.Add(new StatsItem(text, description, color));
-			}
-
-			/// <summary>Statitem that changes color depending on value { statindex, thresholdGreen thresholdGold }</summary>
-			public void AddStat(string text, string description, int[] dynamicColor)
-			{
-				guiItems.Add(new StatsItem(text, description, dynamicColor));
-			}
-		}
-
-		public class StatsItem
-		{
-			private string text;
-			private string description;
-			private int[] dynamicColor = null;
-			private Brush _color = Brushes.Black;
-			/// <summary>Important: Freeze brush after assigned, because it will be used in the UI-thread and will otherwise throw an exception!</summary>
-			private Brush color
-			{
-				get { return _color; }
-				set { _color = value;
-					  _color.Freeze();
-				}
-			}
-
-
-			public StatsItem(string text, string description, Brush color)
-			{
-				this.text = text;
-				this.description = description;
-				if (color != null) {
-					this.color = color;
-				}
-			}
-
-			public StatsItem(string text, string description = "", int[] dynamicColor = null)
-			{
-				this.text = text;
-				this.description = description;
-				this.dynamicColor = dynamicColor;
-			}
-
-			public Brush GetColor()
-			{
-				if (dynamicColor != null && dynamicColor.Length == 3) {
-
-					int statValue = mainInstance.stats.GetStatValue(dynamicColor[0]);
-					if (statValue >= dynamicColor[1]) {
-						color = Brushes.Green;
-					} else if (statValue >= dynamicColor[2]) {
-						color = Brushes.LightGoldenrodYellow;
-					} else {
-						color = Brushes.Red;
-					}
-				}
-
-				return color;
-			}
-
-			public string GetText()
-			{
-				string resultText = text;
-
-				var asMatches2 = Regex.Matches(text, "{(\\d+)}");
-				for (int j = 0; j < asMatches2.Count; j++) {
-
-					string sValue = mainInstance.stats.GetStatValue(int.Parse(asMatches2[j].Groups[1].Value)).ToString();
-					resultText = resultText.Replace(asMatches2[j].Groups[0].Value, sValue);
-				}
-
-				if (description.Length > 0) {
-					resultText += " | " + description;
-				}
-
-				return resultText;
-			}
 		}
 
 		//#EndRegion

@@ -74,11 +74,17 @@
     </ApplicationDefinition>
     <Compile Include="IO\Sound.cs" />
     <Compile Include="MVVM\CommandHandler.cs" />
+    <Compile Include="MVVM\ItemsChangeObservableCollection.cs" />
+    <Compile Include="MVVM\ViewModelBase.cs" />
     <Compile Include="RichTextBoxHelper.cs" />
     <Compile Include="ConfigAlwaysRun.cs" />
     <Compile Include="SoundConfig.xaml.cs">
       <DependentUpon>SoundConfig.xaml</DependentUpon>
     </Compile>
+    <Compile Include="StatsView.xaml.cs">
+      <DependentUpon>StatsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="StatsViewModel.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="WinApi.cs" />
     <Compile Include="MedianData.cs" />
@@ -116,6 +122,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="SoundConfig.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="StatsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

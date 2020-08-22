@@ -18,16 +18,15 @@ namespace MedianStats
 		public IntPtr g_hD2Common { get { return mainInstance.g_hD2Common; } }
 		public IntPtr g_pD2sgpt { get { return mainInstance.g_pD2sgpt; } }
 
+		const int numStats = 1024;
 
-		const int g_iNumStats = 1024;
+		static int[,] cache = new int[2, numStats];
 
-		int[,] g_aiStatsCache = new int[2, g_iNumStats];
-
-		public void UpdateStatValues()
+		public void UpdateCache()
 		{
-			for (int i = 0; i < g_iNumStats; i++) {
-				g_aiStatsCache[0, i] = 0;
-				g_aiStatsCache[1, i] = 0;
+			for (int i = 0; i < numStats; i++) {
+				cache[0, i] = 0;
+				cache[1, i] = 0;
 			}
 
 			if (mainInstance.IsIngame()) {
@@ -38,8 +37,8 @@ namespace MedianStats
 				CalculateWeaponDamage();
 
 				// Poison damage to damage/second
-				g_aiStatsCache[1, 57] *= (25 / 256);
-				g_aiStatsCache[1, 58] *= (25 / 256);
+				cache[1, 57] *= (25 / 256);
+				cache[1, 58] *= (25 / 256);
 
 				// Bonus stats from items; str, dex, vit, ene
 				int[] aiStats = new int[] { 0, 359, 2, 360, 3, 362, 1, 361 };
@@ -50,12 +49,12 @@ namespace MedianStats
 					iTotal = GetStatValue(aiStats[i * 2 + 0], 1);
 					iPercent = GetStatValue(aiStats[i * 2 + 1]);
 
-					g_aiStatsCache[1, 900 + i] = /*Ceiling*/(iTotal / (1 + iPercent / 100) - iBase);
+					cache[1, 900 + i] = /*Ceiling*/(iTotal / (1 + iPercent / 100) - iBase);
 				}
 
 				// Factor cap
 				var iFactor = (int)Math.Floor((GetStatValue(278) * GetStatValue(0, 1) + GetStatValue(485) * GetStatValue(1, 1)) / 3e6 * 100);
-				g_aiStatsCache[1, 904] = iFactor > 100 ? 100 : iFactor;
+				cache[1, 904] = iFactor > 100 ? 100 : iFactor;
 			}
 		}
 
@@ -65,7 +64,7 @@ namespace MedianStats
 			return g_hD2Client + (bMercenary ? 0x10A80C : 0x11BBFC);
 		}
 
-		public struct tagStat
+		public struct TagStat
 		{
 			//word wSubIndex;word wStatIndex;int dwStatValue;
 			public short wSubIndex;
@@ -75,7 +74,7 @@ namespace MedianStats
 
 		public void UpdateStatValueMem(int iVector)
 		{
-			if (iVector !=/*<>*/ 0 && iVector !=/*<>*/ 1) {
+			if (iVector != 0 && iVector != 1) {
 				logger.Debug("UpdateStatValueMem: Invalid iVector value.");
 			}
 
@@ -100,14 +99,14 @@ namespace MedianStats
 
 			//var tStats = DllStructCreate(tagStatsAll);
 			//_WinAPI_ReadProcessMemory(g_ahD2Handle[1], pStatList, DllStructGetPtr(tStats), DllStructGetSize(tStats), 0);
-			var tStats = ReadProcessMemoryStructArray<tagStat>(g_ahD2Handle, pStatList, iStatCount);
+			var tStats = ReadProcessMemoryStructArray<TagStat>(g_ahD2Handle, pStatList, iStatCount);
 
 			int iStatIndex, iStatValue;
 
 			for (int i = 0; i < iStatCount; i++) {
 				//iStatIndex = DllStructGetData(tStats, 2 + (3 * i));
 				iStatIndex = tStats[i].wStatIndex;
-				if (iStatIndex >= g_iNumStats) {
+				if (iStatIndex >= numStats) {
 					continue; // Should never happen
 				}
 
@@ -116,10 +115,10 @@ namespace MedianStats
 
 				switch (iStatIndex) {
 					case var n when (n >= 6 && n <= 11):
-						g_aiStatsCache[iVector, iStatIndex] += iStatValue / 256;
+						cache[iVector, iStatIndex] += iStatValue / 256;
 						break;
 					default:
-						g_aiStatsCache[iVector, iStatIndex] += iStatValue;
+						cache[iVector, iStatIndex] += iStatValue;
 						break;
 				}
 			}
@@ -168,17 +167,17 @@ namespace MedianStats
 			int iMinDamage1 = 0, iMinDamage2 = 0, iMaxDamage1 = 0, iMaxDamage2 = 0;
 
 			if (bIs2H) {
-				//; 2h weapon
+				// 2h weapon
 				iMinDamage2 = GetStatValue(23);
 				iMaxDamage2 = GetStatValue(24);
 			}
 
 			if (bIs1H) {
-				//; 1h weapon
+				// 1h weapon
 				iMinDamage1 = GetStatValue(21);
 				iMaxDamage1 = GetStatValue(22);
 
-				if (!/*not*/ bIs2H) {
+				if (!bIs2H) {
 					// thrown weapon
 					iMinDamage2 = GetStatValue(159);
 					iMaxDamage2 = GetStatValue(160);
@@ -195,7 +194,7 @@ namespace MedianStats
 			int[] aiDamage = new int[] { iMinDamage1, iMaxDamage1, iMinDamage2, iMaxDamage2 };
 
 			for (int i = 0; i <= 3; i++) {
-				g_aiStatsCache[1, 21 + i] = /*Floor*/(aiDamage[i] * fTotalMult);
+				cache[1, 21 + i] = /*Floor*/(aiDamage[i] * fTotalMult);
 			}
 		}
 
@@ -204,11 +203,11 @@ namespace MedianStats
 		{
 			// Velocities
 			for (int i = 67; i <= 69; i++) {
-				g_aiStatsCache[1, i] = 0;
+				cache[1, i] = 0;
 			}
 
 			// itemtype-specific EWD (Elfin Weapons, Shadow Dancer)
-			g_aiStatsCache[1, 343] = 0;
+			cache[1, 343] = 0;
 
 			var pSkillsTxt = (IntPtr)MemoryRead(g_pD2sgpt + 0xB98, g_ahD2Handle);
 			int iSkillID, iStatCount, iStatIndex, iStatValue, iOwnerType, iStateID;
@@ -238,7 +237,7 @@ namespace MedianStats
 					iStatValue = MemoryRead(pStats + i * 8 + 4, g_ahD2Handle, /*"int"*/"dword");
 
 					if (iStatIndex == 350 && iStatValue !=/*<>*/ 511) { iSkillID = iStatValue; }
-					if (iOwnerType == 4 && iStatIndex == 67) { g_aiStatsCache[1, iStatIndex] += iStatValue; } // Armor FRW penalty
+					if (iOwnerType == 4 && iStatIndex == 67) { cache[1, iStatIndex] += iStatValue; } // Armor FRW penalty
 				}
 
 				if (iOwnerType == 4) { continue; }
@@ -283,12 +282,12 @@ namespace MedianStats
 
 					switch (iStatIndex) {
 						case var n when (n >= 67 && n <= 69):
-							if (0 ==/*not*/ iSkillID || /*or*/bHasVelocity[iStatIndex - 67]) { g_aiStatsCache[1, iStatIndex] += iStatValue; }
+							if (0 ==/*not*/ iSkillID || bHasVelocity[iStatIndex - 67]) { cache[1, iStatIndex] += iStatValue; }
 							break;
 						case 343:
 							iItemType = MemoryRead(pStats + i * 8 + 0, g_ahD2Handle, "word");
 							var pWeapon = GetUnitWeapon(pUnit);
-							if (pWeapon /*not*/ == IntPtr.Zero ||/*or*/ iItemType /*not*/ == 0) { continue; }
+							if (pWeapon /*not*/ == IntPtr.Zero || iItemType /*not*/ == 0) { continue; }
 
 							iWeaponClass = MemoryRead(pWeapon + 0x04, g_ahD2Handle);
 							iWeaponType = MemoryRead(pItemsTxt + 0x1A8 * iWeaponClass + 0x11E, g_ahD2Handle, "word");
@@ -319,7 +318,7 @@ namespace MedianStats
 								j += 1;
 							}
 
-							if (bApply) { g_aiStatsCache[1, 343] += iStatValue; }
+							if (bApply) { cache[1, 343] += iStatValue; }
 							break;
 					}
 				}
@@ -328,7 +327,7 @@ namespace MedianStats
 
 		public void FixVeteranToken()
 		{
-			g_aiStatsCache[1, 219] = 0; //; Veteran token
+			cache[1, 219] = 0; // Veteran token
 
 			var pUnitAddress = GetUnitToRead();
 
@@ -364,21 +363,21 @@ namespace MedianStats
 				}
 
 				if (iVeteranTokenCounter == 3) {
-					g_aiStatsCache[1, 219] = 1; //Veteran token
+					cache[1, 219] = 1; // Veteran token
 					return;
 				}
 			}
 		}
 
-		public int GetStatValue(int iStatID)
+		public static int GetStatValue(int iStatID)
 		{
 			int iVector = iStatID < 4 ? 0 : 1;
 			return GetStatValue(iStatID, iVector);
 		}
 
-		public int GetStatValue(int iStatID, int iVector)
+		public static int GetStatValue(int iStatID, int iVector)
 		{
-			var iStatValue = g_aiStatsCache[iVector, iStatID];
+			var iStatValue = cache[iVector, iStatID];
 			//return /*Floor*/(iStatValue != 0 ? iStatValue : 0);
 			return iStatValue;
 		}
