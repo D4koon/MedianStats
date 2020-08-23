@@ -78,8 +78,8 @@
     <Compile Include="MVVM\ViewModelBase.cs" />
     <Compile Include="RichTextBoxHelper.cs" />
     <Compile Include="ConfigAlwaysRun.cs" />
-    <Compile Include="SoundConfig.xaml.cs">
-      <DependentUpon>SoundConfig.xaml</DependentUpon>
+    <Compile Include="SoundsView.xaml.cs">
+      <DependentUpon>SoundsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="StatsView.xaml.cs">
       <DependentUpon>StatsView.xaml</DependentUpon>
@@ -121,7 +121,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="SoundConfig.xaml">
+    <Page Include="SoundsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
