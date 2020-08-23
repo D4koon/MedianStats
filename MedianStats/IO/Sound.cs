@@ -12,7 +12,7 @@ namespace MedianStats.IO
 	[SettingsSerializeAs(SettingsSerializeAs.Xml)]
 	public class Sound
 	{
-		private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+		private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
 		public string FilePath { get; set; }
 		public double Volume { get; set; }
@@ -28,7 +28,6 @@ namespace MedianStats.IO
 
 		public Sound(string filePath, double volume)
 		{
-			//ID = id;
 			this.FilePath = filePath;
 			this.Volume = volume;
 		}

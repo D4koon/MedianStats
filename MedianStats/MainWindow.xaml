@@ -53,14 +53,7 @@
 						</RichTextBox>
 					</TabItem>
 					<TabItem Header="{DynamicResource Tab_Notifier_Sounds_Header}">
-						<StackPanel>
-							<StackPanel x:Name="volumneSliders">
-								<StackPanel Orientation="Horizontal">
-									<Label>Volume-Dummy</Label>
-									<Slider Width="200" Maximum="1"/>
-								</StackPanel>
-							</StackPanel>
-						</StackPanel>
+						<local:SoundsView Width="Auto" Height="Auto"/>
 					</TabItem>
 					<TabItem Header="{DynamicResource Tab_Notifier_Helper_Header}">
 						<local:NotifyHelper Width="Auto" Height="Auto"/>

@@ -36,27 +36,6 @@ namespace MedianStats
 
 
 		// TODO: rechten und linken slot tauschen -> mit rechtsklick den linke slot ausführen
-		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
-		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
-		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
-		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
-		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
-		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
-		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
-		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
-		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
-		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
-		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
-		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
-		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
-		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
-		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
-		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
-		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
-		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
-		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
-		// TODO: Sounds beschrigen welcher für welchen sound steht!!!
-
 
 		public MainWindow()
 		{
@@ -74,9 +53,6 @@ namespace MedianStats
 			mousefix.IsChecked = Settings.Default.mousefix;
 			nopickup.IsChecked = Settings.Default.nopickup;
 			toggle.IsChecked = Settings.Default.toggleShowItems;
-
-			InitVolumeSliders();
-
 
 			notifierText.TextChanged += (unused1, unused2) =>
 			{
@@ -117,22 +93,6 @@ namespace MedianStats
 				
 			}
 			Dispatcher.Invoke(() => rtbIntellisense.ItemsSource = itemList);
-		}
-
-		private void InitVolumeSliders()
-		{
-			// Remove dummy.
-			volumneSliders.Children.Clear();
-
-			// Add a slider for each sound
-			for (int i = 0; i < Settings.Default.notifierSounds.Sounds.Count; i++) {
-				var soundIt = Settings.Default.notifierSounds[i];
-
-				var soundconfig = new SoundConfig() { Sound = soundIt, ID = i };
-				volumneSliders.Children.Add(soundconfig);
-
-				notifier.Sounds.Add(i, Settings.Default.notifierSounds[i]);
-			}
 		}
 
 		public FontFamily StatsFontFamily = new FontFamily("Consolas");
@@ -698,24 +658,6 @@ namespace MedianStats
 		//		_GUI_NewOption($i-1, g_avGUIOptionList[$iOption][0], g_avGUIOptionList[$iOption][3], g_avGUIOptionList[$iOption][4]);
 		//		$iOption += 1;
 		//	}
-
-		//	for $i = 0 to g_iNumSounds - 1
-		//		var iLine = 1 + $i*2
-
-		//		var id = GUICtrlCreateSlider(60, _GUI_LineY($iLine), 200, 25, BitOR($TBS_TOOLTIPS, $TBS_AUTOTICKS, $TBS_ENABLESELRANGE))
-		//		GUICtrlSetLimit(-1, 10, 0)
-		//		GUICtrlSetOnEvent(-1, "OnChange_VolumeSlider")
-		//		_GUICtrlSlider_SetTicFreq($id, 1)
-
-		//		_GUI_NewTextBasic($iLine, "Sound " & ($i + 1), false)
-
-		//		GUICtrlCreateButton("Test", 260, _GUI_LineY($iLine), 60, 25)
-		//		GUICtrlSetOnEvent(-1, "OnClick_VolumeTest")
-
-		//		if ($i == 0) { g_idVolumeSlider = $id
-		//		_GUI_Volume($i, 5)
-		//	}
-		//	LoadGUIVolume()
 
 		//	GUICtrlCreateTabItem("About")
 		//	_GUI_GroupX(8)
