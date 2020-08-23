@@ -84,6 +84,7 @@
     <Compile Include="StatsView.xaml.cs">
       <DependentUpon>StatsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SoundsViewModel.cs" />
     <Compile Include="StatsViewModel.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="WinApi.cs" />

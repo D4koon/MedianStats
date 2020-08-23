@@ -3,6 +3,8 @@ using MedianStats.Properties;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -20,66 +22,20 @@ using System.Windows.Shapes;
 namespace MedianStats
 {
 	/// <summary>
-	/// Interaction logic for SoundConfig.xaml
+	/// Interaction logic for SoundsView.xaml
 	/// </summary>
-	public partial class SoundConfig : UserControl
+	public partial class SoundsView : UserControl
 	{
-		private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+		private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
-		Sound sound;
-
-		public Sound Sound
-		{
-			set {
-				sound = value;
-				slider.Value = value.Volume;
-			}
-		}
-		public int ID;
-
-		public SoundConfig()
+		public SoundsView()
 		{
 			InitializeComponent();
 
-			DataContext = this;
-		}
-
-		private ICommand _playCommand;
-		public ICommand PlayCommand
-		{
-			get {
-				return _playCommand ?? (_playCommand = new CommandHandler(() => sound.Play(), () => true));
+			// Only set the sliders in runtime and not at design-time. Because at design-time MainWindow.mainInstance will be null
+			if (MainWindow.mainInstance != null && DesignerProperties.GetIsInDesignMode(this) == false) {
+				model.LinkSounds(Settings.Default.notifierSounds.Sounds);
 			}
-		}
-
-		private ICommand _chooseCommand;
-		public ICommand ChooseCommand
-		{
-			get {
-				return _chooseCommand ?? (_chooseCommand = new CommandHandler(() => ShowDialog(), () => true));
-			}
-		}
-
-		private void ShowDialog()
-		{
-			OpenFileDialog openFileDialog = new OpenFileDialog();
-			openFileDialog.InitialDirectory = MainWindow.ExeDir + "\\resources";
-			if (openFileDialog.ShowDialog() == true) {
-				sound.FilePath = openFileDialog.FileName;
-				Settings.Default.notifierSounds[ID].FilePath = openFileDialog.FileName;
-				Settings.Default.Save();
-			}
-		}
-
-		private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-		{
-			// Slider has value from 0...1
-			var volume = ((Slider)sender).Value;
-			logger.Debug(volume);
-
-			sound.Volume = volume;
-			Settings.Default.notifierSounds[ID].Volume = volume;
-			Settings.Default.Save();
 		}
 	}
 }
