@@ -26,5 +26,15 @@ namespace MedianStats
 							 .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
 							 .ToArray();
 		}
+
+		public static string EncodeBase64(string decodedString)
+		{
+			return Convert.ToBase64String(Encoding.UTF8.GetBytes(decodedString));
+		}
+
+		public static string DecodeBase64(string encodedString)
+		{
+			return Encoding.UTF8.GetString(Convert.FromBase64String(encodedString));
+		}
 	}
 }
