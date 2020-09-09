@@ -7,7 +7,7 @@
 		xmlns:beh="clr-namespace:Behaviorlibrary;assembly=Behaviorlibrary"
 		xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
 		mc:Ignorable="d"
-		Title="MedianStats 1.2.0" Height="500" Width="800" Closing="Window_Closing" Icon="resources/logo.ico">
+		Title="MedianStats 1.3.0" Height="500" Width="800" Closing="Window_Closing" Icon="resources/logo.ico">
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*"/>
