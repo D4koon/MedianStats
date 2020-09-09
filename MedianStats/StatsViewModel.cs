@@ -20,6 +20,8 @@ namespace MedianStats
 		public ItemsChangeObservableCollection<StatsGroup> statsListDefens { get; set; } = new ItemsChangeObservableCollection<StatsGroup>();
 		public ItemsChangeObservableCollection<StatsGroup> StatsListOffens { get; set; } = new ItemsChangeObservableCollection<StatsGroup>();
 
+		public FontFamily Font { get => MainWindow.mainInstance?.StatsFontFamily ?? new FontFamily("Consolas"); }
+
 		public StatsViewModel()
 		{
 			StatsView.CreateStatsGroups();

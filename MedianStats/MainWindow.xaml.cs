@@ -135,6 +135,8 @@ namespace MedianStats
 			}
 		}
 
+		public FontFamily StatsFontFamily = new FontFamily("Consolas");
+
 		private void InitLanguageDictionary()
 		{
 			const string translationFoler = "resources\\translations\\";
@@ -155,6 +157,7 @@ namespace MedianStats
 				case "zh-MO":
 				case "zh-TW":
 					dict.Source = new Uri(translationFoler + "StringResources.zh.xaml", UriKind.Relative);
+					StatsFontFamily = new FontFamily("Microsoft Yahei");
 					break;
 				default:
 					dict.Source = new Uri(translationFoler + "StringResources.xaml", UriKind.Relative);
