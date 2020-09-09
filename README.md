@@ -20,6 +20,8 @@ Feature autocomplete in action (ctrl-j or with rightclick menue)<br>
 <b>NOTE: Works only ingame!</b><br>
 ![MedianStats AppPreview](/MedianStats/resources/autocomplete_feature.gif)
 
+<a href="https://forum.median-xl.com/viewtopic.php?f=4&t=56333">MedianXL forum thread</a>
+
 ---
 
 </hl>
