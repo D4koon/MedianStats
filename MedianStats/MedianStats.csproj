@@ -78,6 +78,7 @@
     <Compile Include="MVVM\ViewModelBase.cs" />
     <Compile Include="RichTextBoxHelper.cs" />
     <Compile Include="ConfigAlwaysRun.cs" />
+    <Compile Include="Sounds.cs" />
     <Compile Include="SoundsView.xaml.cs">
       <DependentUpon>SoundsView.xaml</DependentUpon>
     </Compile>

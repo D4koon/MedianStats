@@ -175,6 +175,7 @@ namespace MedianStats
 
 		#region Main
 
+		public Sounds Sounds = new Sounds();
 		ShowItems showItems = new ShowItems();
 		MouseFix mouseFix = new MouseFix();
 		NoPickup noPickup = new NoPickup();

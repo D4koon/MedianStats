@@ -32,8 +32,6 @@ namespace MedianStats
 
 		public bool NeedUpdateList = true;
 
-		public Dictionary<int, Sound> Sounds = new Dictionary<int, Sound>();
-
 		PrintColor[] qualityColor = new PrintColor[] { 0, PrintColor.White, PrintColor.White, PrintColor.White, PrintColor.Blue, PrintColor.Lime, PrintColor.Yellow, PrintColor.Gold, PrintColor.Orange, PrintColor.Green };
 
 		List<NotifyMatch> notifyMatchList = new List<NotifyMatch>(); //Flags, Regex
@@ -137,8 +135,8 @@ namespace MedianStats
 
 							mainInstance.PrintString("- " + itemText, iColor);
 
-							if (Sounds.ContainsKey(iFlagsSound)) {
-								Sounds[iFlagsSound].Play();
+							if (iFlagsSound != -1) {
+								MainWindow.mainInstance.Sounds.List[iFlagsSound].Play();
 							}
 						}
 					}

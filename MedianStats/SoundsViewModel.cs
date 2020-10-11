@@ -35,10 +35,11 @@ namespace MedianStats
 			Sounds = tempSounds;
 		}
 
-		public void LinkSounds(List<Sound> soundsList)
+		public void LinkSounds(Sounds sounds)
 		{
 			var tempSounds = new ItemsChangeObservableCollection<SoundConfig>();
 
+			var soundsList = sounds.List;
 			for (int i = 0; i < soundsList.Count; i++) {
 				var sound = soundsList[i];
 

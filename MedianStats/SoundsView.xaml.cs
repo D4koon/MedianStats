@@ -34,7 +34,7 @@ namespace MedianStats
 
 			// Only set the sliders in runtime and not at design-time. Because at design-time MainWindow.mainInstance will be null
 			if (MainWindow.mainInstance != null && DesignerProperties.GetIsInDesignMode(this) == false) {
-				model.LinkSounds(Settings.Default.notifierSounds.Sounds);
+				model.LinkSounds(MainWindow.mainInstance.Sounds);
 			}
 		}
 	}
